@@ -1,4 +1,5 @@
 #!/bin/env python
+#-*- coding: utf8 -*-
 
 import tensorflow as tf
 from tensorflow.models.rnn import rnn, rnn_cell
@@ -51,18 +52,21 @@ def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 	return batch_xs, batch_ys
 
 
-sentences = ['abcdefg', 
-			 'hijklmn',
-			 'opqrstu',
-			 'vwxyz**',
-			 'ABCDEFG',
-			 'HIJKLMN',
-			 'OPQRSTU',
-			 'VWXYZ**',
-			 'abcdefg',  # test
-			 'opqrstu',  # test
-			 'ABCDEFG']  # test
-batch_size = 4
+sentences = [u'abcdefg', 
+			 u'hijklmn',
+			 u'opqrstu',
+			 u'vwxyz**',
+			 u'ABCDEFG',
+			 u'HIJKLMN',
+			 u'OPQRSTU',
+			 u'VWXYZ**',
+			 u'가나다라마바사',
+			 u'아자차카타파하']
+test_sentences = [u'abcdefg',
+			      u'opqrstu',
+				  u'ABCDEFG',
+				  u'아자차카타파하']
+batch_size = 2
 
 '''
 sentences = ['hello world']
@@ -143,8 +147,7 @@ sess.run(init)
 
 step = 1
 while step < training_iters :
-	if step % 2 == 0 : begin = 0
-	else : begin = 4
+	begin = (step % (len(sentences)/batch_size)) * batch_size
 	batch_xs, batch_ys = next_batch(sentences, begin, batch_size, n_steps, char_dic)
 	'''
 	print 'batch_xs.shape : ' + str(batch_xs.shape)
@@ -162,12 +165,12 @@ while step < training_iters :
 	step += 1
 
 # inference
-batch_size = 3
-begin = 8
-batch_xs, batch_ys = next_batch(sentences, begin, batch_size, n_steps, char_dic)
+batch_size = len(test_sentences)
+begin = 0
+batch_xs, batch_ys = next_batch(test_sentences, begin, batch_size, n_steps, char_dic)
 c_istate = np.zeros((batch_size, 2*n_hidden))
 feed={x: batch_xs, y_: batch_ys, istate: c_istate}
 result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
-print result, [char_rdic[t] for t in result]
-
-
+print result
+for t in result :
+	print char_rdic[t].encode('utf-8') + ' ',
