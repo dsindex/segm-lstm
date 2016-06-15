@@ -11,7 +11,7 @@ segm-lstm
 
 - sketch code
 ```
-$ python char_lstm.py
+$ python segm_lstm.py
 ...
 step : 970,cost : 0.0117462
 step : 980,cost : 0.0115485
