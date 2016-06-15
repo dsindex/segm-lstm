@@ -21,18 +21,18 @@ def build_dictionary(sentences) :
 	char_dic = {w: i for i, w in enumerate(char_rdic)} # char to id
 	return char_rdic, char_dic
 
-def one_hot(i, vocab_size) :
-	return [ 1 if j == i else 0 for j in xrange(vocab_size) ]
+def one_hot(i, size) :
+	return [ 1 if j == i else 0 for j in xrange(size) ]
 
 def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 	'''
-	y_data = n_classes = [0,1,...,0] => n_steps unfolding
+	y_data =  1 or 0     => n_steps unfolding => [0,0,1,0,...]
 	^
 	|
-	x_data = n_input   = [1,0,...,0] => n_steps unfolding
+	x_data = [1,0,...,0] => n_steps unfolding => [[1,0,..0],..,[0,0,1,..0]]
 
 	batch_xs.shape => (batch_size, n_steps, n_input)
-	batch_ys.shape => (batch_size, n_steps, n_input)
+	batch_ys.shape => (batch_size, n_steps)
 	'''
 	batch_xs = []
 	batch_ys = []
@@ -43,7 +43,11 @@ def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 		x_data = [char_dic[c] for c in x_data]
 		x_data = [one_hot(i, vocab_size) for i in x_data]
 		batch_xs.append(x_data)
-		y_data = [char_dic[c] for c in sentence[1:n_steps+1]]
+		y_data = []
+		for c in sentence[1:n_steps] :
+			if c == ' ' : y_data.append(1) # next is space
+			else : y_data.append(0)        # next is not space
+		y_data.append(0)
 		batch_ys.append(y_data)
 		count += 1
 		if count == batch_size : break
@@ -52,39 +56,19 @@ def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 	return batch_xs, batch_ys
 
 
-sentences = [u'abcdefg', 
-			 u'hijklmn',
-			 u'opqrstu',
-			 u'vwxyz**',
-			 u'ABCDEFG',
-			 u'HIJKLMN',
-			 u'OPQRSTU',
-			 u'VWXYZ**',
-			 u'가나다라마바사',
-			 u'아자차카타파하',
-			 u'카카오_검색은',
-			 u'네이버의_검색']
-test_sentences = [u'abcdefg',
-			      u'opqrstu',
-				  u'ABCDEFG',
-				  u'아자차카타파하',
-				  u'카카오_검색은']
-batch_size = 2
-
-'''
-sentences = ['hello world']
+sentences = [u'이것을 띄어쓰기하면 어떻게 될까요']
 batch_size = 1
-'''
+
 
 # config
 learning_rate = 0.01
 training_iters = 1000
 
-n_steps = len(sentences[0]) - 1 # time stpes
+n_steps = len(sentences[0])     # time stpes
 char_rdic, char_dic = build_dictionary(sentences)
 n_input = len(char_dic)         # input dimension, vocab size
 n_hidden = 8                    # hidden layer size
-n_classes = len(char_dic)       # output classes,  vocab size
+n_classes = 2                   # output classes,  space or not
 
 x = tf.placeholder("float", [None, n_steps, n_input])
 y_ = tf.placeholder("int32", [None, n_steps])
@@ -117,7 +101,7 @@ def RNN(_X, _istate, _weights, _biases):
 	_X = tf.split(0, n_steps, _X) # n_steps splits each of which contains (?, n_hidden)
 	'''
 	ex)
-	i  split0  split1  split2 .... split6
+	i  split0  split1  split2 .... split(n)
 	0  (8)     ...                 (8)
 	1  (8)     ...                 (8)
 	...
@@ -148,7 +132,7 @@ sess = tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS
 init = tf.initialize_all_variables()
 sess.run(init)
 
-step = 1
+step = 0
 while step < training_iters :
 	begin = (step % (len(sentences)/batch_size)) * batch_size
 	batch_xs, batch_ys = next_batch(sentences, begin, batch_size, n_steps, char_dic)
@@ -168,12 +152,41 @@ while step < training_iters :
 	step += 1
 
 # inference
+test_sentences = [u'이것을띄어쓰기하면어떻게될까요']
 batch_size = len(test_sentences)
+# padding
+i = 0
+while i < batch_size :
+	sentence = test_sentences[i]
+	length = len(sentence)
+	diff = n_steps - length
+	if diff > 0 : # add padding
+		test_sentences[i] += ' '*diff
+	i += 1
+	
 begin = 0
 batch_xs, batch_ys = next_batch(test_sentences, begin, batch_size, n_steps, char_dic)
 c_istate = np.zeros((batch_size, 2*n_hidden))
 feed={x: batch_xs, y_: batch_ys, istate: c_istate}
 result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
-print result
-for t in result :
-	print char_rdic[t].encode('utf-8') + ' ',
+i = 0
+while i < batch_size :
+	sentence = test_sentences[i]
+	bidx = i*n_steps
+	eidx = bidx + n_steps
+	rst = result[bidx:eidx]
+	# generate output using tag(space or not)
+	out = []
+	j = 0
+	while j < n_steps :
+		tag = rst[j]
+		if tag == 1 :
+			out.append(sentence[j])
+			out.append(' ')
+		else :
+			out.append(sentence[j])
+		j += 1
+	n_sentence = ''.join(out).strip()
+	print 'out = ' + n_sentence
+	i += 1
+

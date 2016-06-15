@@ -11,11 +11,11 @@ segm-lstm
 
 - sketch code
 ```
-char_lstm.py
-
-* input char sequences
-* predict next char
+$ python char_lstm.py
+...
+step : 970,cost : 0.0117462
+step : 980,cost : 0.0115485
+step : 990,cost : 0.0113553
+out = 이것을 띄어쓰기하면 어떻게 될까요
 ```
-
-- prepare training data
 
