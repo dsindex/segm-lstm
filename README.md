@@ -12,6 +12,9 @@ segm-lstm
 - sketch code
 ```
 char_lstm.py
+
+* input char sequences
+* predict next char
 ```
 
 - prepare training data

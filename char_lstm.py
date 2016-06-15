@@ -61,11 +61,14 @@ sentences = [u'abcdefg',
 			 u'OPQRSTU',
 			 u'VWXYZ**',
 			 u'가나다라마바사',
-			 u'아자차카타파하']
+			 u'아자차카타파하',
+			 u'카카오_검색은',
+			 u'네이버의_검색']
 test_sentences = [u'abcdefg',
 			      u'opqrstu',
 				  u'ABCDEFG',
-				  u'아자차카타파하']
+				  u'아자차카타파하',
+				  u'카카오_검색은']
 batch_size = 2
 
 '''
