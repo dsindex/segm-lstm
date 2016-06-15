@@ -56,15 +56,24 @@ def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 	return batch_xs, batch_ys
 
 
-sentences = [u'이것을 띄어쓰기하면 어떻게 될까요']
+sentences = [u'이것을 띄어쓰기하면 어떻게 될까요.',
+             u'아버지가 방에 들어가신다.']
 batch_size = 1
-
+n_steps = len(sentences[0])     # time stpes
+# padding
+i = 0
+while i < len(sentences) :
+	sentence = sentences[i]
+	length = len(sentence)
+	diff = n_steps - length
+	if diff > 0 : # add padding
+		sentences[i] += ' '*diff
+	i += 1
 
 # config
 learning_rate = 0.01
 training_iters = 1000
 
-n_steps = len(sentences[0])     # time stpes
 char_rdic, char_dic = build_dictionary(sentences)
 n_input = len(char_dic)         # input dimension, vocab size
 n_hidden = 8                    # hidden layer size
@@ -152,7 +161,8 @@ while step < training_iters :
 	step += 1
 
 # inference
-test_sentences = [u'이것을띄어쓰기하면어떻게될까요']
+test_sentences = [u'이것을띄어쓰기하면어떻게될까요.',
+                  u'아버지가방에들어가신다.']
 batch_size = len(test_sentences)
 # padding
 i = 0
@@ -170,7 +180,7 @@ c_istate = np.zeros((batch_size, 2*n_hidden))
 feed={x: batch_xs, y_: batch_ys, istate: c_istate}
 result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
 i = 0
-while i < batch_size :
+while i < len(test_sentences) :
 	sentence = test_sentences[i]
 	bidx = i*n_steps
 	eidx = bidx + n_steps
