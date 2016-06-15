@@ -9,7 +9,10 @@ segm-lstm
     - string, ex) '이것을 띄어쓰기하면 어떻게 될까요' 
   - modeling function using LSTM in tensorflow
 
-- [sketch code](https://github.com/dsindex/tensorflow/blob/master/simple_lstm1.py)
+- sketch code
+```
+char_lstm.py
+```
 
 - prepare training data
 

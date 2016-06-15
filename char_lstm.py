@@ -24,12 +24,21 @@ def one_hot(i, vocab_size) :
 	return [ 1 if j == i else 0 for j in xrange(vocab_size) ]
 
 def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
+	'''
+	y_data = n_classes = [0,1,...,0] => n_steps unfolding
+	^
+	|
+	x_data = n_input   = [1,0,...,0] => n_steps unfolding
+
+	batch_xs.shape => (batch_size, n_steps, n_input)
+	batch_ys.shape => (batch_size, n_steps, n_input)
+	'''
 	batch_xs = []
 	batch_ys = []
 	count = 0
+	vocab_size = len(char_dic)
 	for sentence in sentences[begin:] :
 		x_data = sentence[0:n_steps]
-		vocab_size = len(char_dic)
 		x_data = [char_dic[c] for c in x_data]
 		x_data = [one_hot(i, vocab_size) for i in x_data]
 		batch_xs.append(x_data)
@@ -39,15 +48,20 @@ def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 		if count == batch_size : break
 	batch_xs = np.array(batch_xs, dtype='f')
 	batch_ys = np.array(batch_ys, dtype='int32')
-	return batch_xs, batch_ys, begin+count
+	return batch_xs, batch_ys
 
 
 sentences = ['abcdefg', 
 			 'hijklmn',
 			 'opqrstu',
 			 'vwxyz**',
+			 'ABCDEFG',
+			 'HIJKLMN',
+			 'OPQRSTU',
+			 'VWXYZ**',
 			 'abcdefg',  # test
-			 'opqrstu']  # test
+			 'opqrstu',  # test
+			 'ABCDEFG']  # test
 batch_size = 4
 
 '''
@@ -57,7 +71,7 @@ batch_size = 1
 
 # config
 learning_rate = 0.01
-training_iters = 500
+training_iters = 1000
 
 n_steps = len(sentences[0]) - 1 # time stpes
 char_rdic, char_dic = build_dictionary(sentences)
@@ -85,7 +99,7 @@ def RNN(_X, _istate, _weights, _biases):
 	# switch n_steps and batch_size, (n_steps, batch_size, n_input)
 	_X = tf.transpose(_X, [1, 0, 2])
 	# Reshape to prepare input to hidden activation
-	# (n_steps*batch_size, n_input) = (?, n_input)
+	# (n_steps*batch_size, n_input) => (?, n_input)
 	_X = tf.reshape(_X, [-1, n_input])
 	# Linear activation
 	_X = tf.matmul(_X, _weights['hidden']) + _biases['hidden'] # (?, n_hidden)
@@ -127,16 +141,19 @@ sess = tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS
 init = tf.initialize_all_variables()
 sess.run(init)
 
-begin = 0
-batch_xs, batch_ys, begin = next_batch(sentences, begin, batch_size, n_steps, char_dic)
-print 'batch_xs.shape : ' + str(batch_xs.shape)
-print 'batch_xs : '
-print batch_xs
-print 'batch_ys.shape : ' + str(batch_ys.shape)
-print 'batch_ys : '
-print batch_ys
 step = 1
 while step < training_iters :
+	if step % 2 == 0 : begin = 0
+	else : begin = 4
+	batch_xs, batch_ys = next_batch(sentences, begin, batch_size, n_steps, char_dic)
+	'''
+	print 'batch_xs.shape : ' + str(batch_xs.shape)
+	print 'batch_xs : '
+	print batch_xs
+	print 'batch_ys.shape : ' + str(batch_ys.shape)
+	print 'batch_ys : '
+	print batch_ys
+	'''
 	c_istate = np.zeros((batch_size, 2*n_hidden))
 	feed={x: batch_xs, y_: batch_ys, istate: c_istate}
 	sess.run(optimizer, feed_dict=feed)
@@ -145,8 +162,9 @@ while step < training_iters :
 	step += 1
 
 # inference
-batch_size = 2
-batch_xs, batch_ys, begin = next_batch(sentences, begin, batch_size, n_steps, char_dic)
+batch_size = 3
+begin = 8
+batch_xs, batch_ys = next_batch(sentences, begin, batch_size, n_steps, char_dic)
 c_istate = np.zeros((batch_size, 2*n_hidden))
 feed={x: batch_xs, y_: batch_ys, istate: c_istate}
 result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
