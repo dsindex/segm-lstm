@@ -28,13 +28,33 @@ out = 아버지가 방에 들어가신다.
 - test variable length lstm
 ```
 $ python segm_lstm_vlen.py
-... not working ...
+
+if batch_size = 1 and n_steps depends on the size of input sentence, 
+then we might think :
 
 n_steps = tf.placeholder("int32")
 x = tf.placeholder("float", [None, n_steps, n_input])
 y_ = tf.placeholder("int32", [None, n_steps])
 
-=> this usage is not possible
+but this usage is not possible.
 
+let's try to use sliding window method :
+
+min_size = 5
+n_steps = 50
+stride = 10
+
+- training
+  if len(sentence) < min_size : continue
+  if len(sentence) >= min_size and len(sentence) < n_steps : padding with ' '
+  if len(sentence) > n_steps : move next batch pointer(sliding window)
+
+- inference
+  if len(sentence) < min_size : continue
+  if len(sentence) >= min_size and len(sentence) < n_steps : padding with ' '
+  if len(sentence) > n_steps : 
+    move next batch pointer(sliding window)
+	merge result into one array
+	decoding
 ```
 
