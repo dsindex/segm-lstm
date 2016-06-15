@@ -3,11 +3,16 @@ segm-lstm
 
 - description
   - string segmentation using LSTM(tensorflow)
-  - input
-    - string, ex) '이것을띄어쓰기하면어떻게될까요'
-  - output
-    - string, ex) '이것을 띄어쓰기하면 어떻게 될까요' 
-  - modeling function using LSTM in tensorflow
+    - input
+      - string, ex) '이것을띄어쓰기하면어떻게될까요'
+    - output
+      - string, ex) '이것을 띄어쓰기하면 어떻게 될까요' 
+  - model
+    - x : '이것을 띄어쓰기하면 어떻게 될까요'
+	- y : '0 0 1 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0'
+	  - 1 : if next char is space
+	  - 0 : if next char is not space
+    - learn to predict next tag using LSTM
 
 - sketch code
 ```

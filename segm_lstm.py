@@ -58,7 +58,6 @@ def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 
 sentences = [u'이것을 띄어쓰기하면 어떻게 될까요.',
              u'아버지가 방에 들어가신다.']
-batch_size = 1
 n_steps = len(sentences[0])     # time stpes
 # padding
 i = 0
@@ -129,6 +128,7 @@ def RNN(_X, _istate, _weights, _biases):
 # training
 y = RNN(x, istate, weights, biases)
 
+batch_size = 1
 logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
 targets = y_
 seq_weights = tf.ones([n_steps * batch_size])
@@ -163,10 +163,9 @@ while step < training_iters :
 # inference
 test_sentences = [u'이것을띄어쓰기하면어떻게될까요.',
                   u'아버지가방에들어가신다.']
-batch_size = len(test_sentences)
 # padding
 i = 0
-while i < batch_size :
+while i < len(test_sentences) :
 	sentence = test_sentences[i]
 	length = len(sentence)
 	diff = n_steps - length
@@ -174,6 +173,7 @@ while i < batch_size :
 		test_sentences[i] += ' '*diff
 	i += 1
 	
+batch_size = len(test_sentences)
 begin = 0
 batch_xs, batch_ys = next_batch(test_sentences, begin, batch_size, n_steps, char_dic)
 c_istate = np.zeros((batch_size, 2*n_hidden))
