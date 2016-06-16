@@ -27,8 +27,6 @@ out = 아버지가 방에 들어가신다.
 
 - test variable length lstm
 ```
-$ python segm_lstm_vlen.py
-
 if batch_size = 1 and n_steps depends on the size of input sentence, 
 then we might think :
 
@@ -41,20 +39,28 @@ but this usage is not possible.
 let's try to use sliding window method :
 
 min_size = 5
-n_steps = 50
-stride = 10
+n_steps = 20
 
 - training
   if len(sentence) < min_size : continue
-  if len(sentence) >= min_size and len(sentence) < n_steps : padding with ' '
+  if len(sentence) >= min_size and len(sentence) < n_steps : padding with '\t'
   if len(sentence) > n_steps : move next batch pointer(sliding window)
 
 - inference
   if len(sentence) < min_size : continue
-  if len(sentence) >= min_size and len(sentence) < n_steps : padding with ' '
+  if len(sentence) >= min_size and len(sentence) < n_steps : padding with '\t'
   if len(sentence) > n_steps : 
     move next batch pointer(sliding window)
 	merge result into one array
 	decoding
+
+$ python segm_lstm_vlen.py
+...
+seq : 470,cost : 0.00284278
+seq : 480,cost : 0.00167446
+seq : 490,cost : 0.00134679
+out = 이것을 띄어쓰기하면 어떻게 될까요.
+out = 아버지가 방에 들어가 신다.
+out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 ```
 
