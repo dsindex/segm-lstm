@@ -25,10 +25,10 @@ out = 이것을 띄어쓰기하면 어떻게 될까요
 out = 아버지가 방에 들어가신다.
 ```
 
-- test variable length lstm
+- how to deal variable-length input
 ```
 if batch_size = 1 and n_steps depends on the size of input sentence, 
-then we might think :
+we might think :
 
 n_steps = tf.placeholder("int32")
 x = tf.placeholder("float", [None, n_steps, n_input])

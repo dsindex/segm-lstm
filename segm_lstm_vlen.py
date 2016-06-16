@@ -7,6 +7,9 @@ import tensorflow as tf
 from tensorflow.models.rnn import rnn, rnn_cell
 import numpy as np
 
+CLASS_1 = 1  # next is space
+CLASS_0 = 0  # next is no space
+
 def weight_variable(shape):
 	initial = tf.truncated_normal(shape, stddev=0.1)
 	return tf.Variable(initial)
@@ -40,9 +43,9 @@ def get_xy_data(sentence, pos, n_steps, padd) :
 		next_c = None
 		if i+1 < slen : next_c = sentence[i+1]
 		if next_c == ' ' : 
-			y_data.append(1) # next is space
+			y_data.append(CLASS_1)
 		else : 
-			y_data.append(0) # next is not space
+			y_data.append(CLASS_0)
 		count += 1
 		i += 1
 		if count == n_steps : break
@@ -53,9 +56,12 @@ def get_xy_data(sentence, pos, n_steps, padd) :
 		if i < slen :
 			# move prev space + 1
 			j = i-1
+			space_count = 0
 			while j > 0 :
 				c = sentence[j]
-				if c == ' ' : break
+				if c == ' ' :
+					space_count += 1
+					if space_count == 1 : break
 				j -= 1
 			if j <= i - 1 : 
 				next_pos = j+1
@@ -63,7 +69,7 @@ def get_xy_data(sentence, pos, n_steps, padd) :
 		# padding
 		diff = n_steps - count
 		x_data += [padd]*diff
-		y_data += [0]*diff
+		y_data += [CLASS_0]*diff
 		next_pos = -1
 
 	return x_data, y_data, next_pos
@@ -125,9 +131,9 @@ n_input = len(char_dic)         # input dimension, vocab size
 n_hidden = 8                    # hidden layer size
 n_classes = 2                   # output classes,  space or not
 vocab_size = n_input
-'''
+
 test_next_batch(sentences, char_dic, vocab_size, n_steps, padd)
-'''
+
 x = tf.placeholder("float", [None, n_steps, n_input])
 y_ = tf.placeholder("int32", [None, n_steps])
 
@@ -219,35 +225,6 @@ test_sentences = [u'이것을띄어쓰기하면어떻게될까요.',
 				  u'기업들이극한 구조조정을통해 흑자로전환하거나']
 test_sentences = [snorm(sentence) for sentence in test_sentences]
 
-batch_size = 1
-i = 0
-while i < len(test_sentences) :
-	begin = i
-	sentence = test_sentences[begin]
-	sentence_size = len(sentence)
-	tag_vector = [0]*(sentence_size+n_steps) # buffer n_steps
-	pos = 0
-	while pos != -1 :
-		batch_xs, batch_ys, next_pos = next_batch(test_sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
-		'''
-		print 'next_pos : ' + str(next_pos) + '\t' + sentence[pos:pos+n_steps]
-		'''
-		c_istate = np.zeros((batch_size, 2*n_hidden))
-		feed={x: batch_xs, y_: batch_ys, istate: c_istate}
-		result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
-		# overlapped copy
-		j = 0
-		result_size = len(result)
-		while j < result_size :
-			tag = result[j]
-			tag_vector[pos+j] = tag
-			j += 1
-		pos = next_pos
-	# generate output using tag_vector(space or not)
-	print 'out = ' + to_sentence(tag_vector, sentence)
-
-	i += 1
-
 def to_sentence(tag_vector, sentence) :
 	out = []
 	j = 0
@@ -255,7 +232,7 @@ def to_sentence(tag_vector, sentence) :
 	sentence_size = len(sentence)
 	while j < tag_vector_size and j < sentence_size :
 		tag = tag_vector[j]
-		if tag == 1 :
+		if tag == CLASS_1 :
 			out.append(sentence[j])
 			if sentence[j] != ' ' : out.append(' ')
 		else :
@@ -263,5 +240,45 @@ def to_sentence(tag_vector, sentence) :
 		j += 1
 	n_sentence = ''.join(out)
 	return snorm(n_sentence.encode('utf-8'))
+
+batch_size = 1
+i = 0
+while i < len(test_sentences) :
+	begin = i
+	sentence = test_sentences[begin]
+	sentence_size = len(sentence)
+	tag_vector = [-1]*(sentence_size+n_steps) # buffer n_steps
+	pos = 0
+	while pos != -1 :
+		batch_xs, batch_ys, next_pos = next_batch(test_sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
+		'''	
+		print 'next_pos : ' + str(next_pos) + '\t' + sentence[pos:pos+n_steps]
+		'''
+		c_istate = np.zeros((batch_size, 2*n_hidden))
+		feed={x: batch_xs, y_: batch_ys, istate: c_istate}
+		result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
+		# overlapped copy and merge
+		j = 0
+		result_size = len(result)
+		while j < result_size :
+			tag = result[j]
+			if tag_vector[pos+j] == -1 :
+				tag_vector[pos+j] = tag
+			else :
+				if tag_vector[pos+j] == CLASS_1 : # 1
+					if tag == CLASS_0 : # 1 -> 0
+						sys.stderr.write("1->0\n")
+						tag_vector[pos+j] = tag
+				else : # 0
+					if tag == CLASS_1 : # 0 -> 1
+						sys.stderr.write("0->1\n")
+						tag_vector[pos+j] = tag
+			j += 1
+		pos = next_pos
+	# generate output using tag_vector
+	print 'out = ' + to_sentence(tag_vector, sentence)
+
+	i += 1
+
 
 
