@@ -125,6 +125,22 @@ def test_next_batch(train_path, char_dic, vocab_size, n_steps, padd) :
 			pos = next_pos
 	close_file(fid)
 
+def get_validation_data(validation_path, char_dic, vocab_size, n_steps, padd) :
+	validation_data = []
+	fid = open_file(validation_path, 'r')
+	for line in fid :
+		line = line.strip()
+		if line == "" : continue
+		line = line.decode('utf-8')
+		sentence = snorm(line)
+		pos = 0
+		while pos != -1 :
+			batch_xs, batch_ys, next_pos, count = next_batch(sentence, pos, char_dic, vocab_size, n_steps, padd)
+			validation_data.append((batch_xs, batch_ys, count))
+			pos = next_pos
+	close_file(fid)
+	return validation_data
+
 def to_sentence(tag_vector, sentence) :
 	out = []
 	j = 0

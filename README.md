@@ -45,12 +45,16 @@ n_steps = 40
 
 - train
 ```
-$ python train.py --train=train.txt --model=model
+$ python train.py --train=train.txt --validation=train.txt --model=model
 ...
-(i,seq) : (2,20),cost : 2.24725
-(i,seq) : (2,30),cost : 1.8682
-(i,seq) : (2,40),cost : 1.5787
-....
+seq : 96,total cost : 2.36490138248
+seq : 97,total cost : 2.32890268601
+seq : 98,total cost : 2.29376351926
+seq : 99,total cost : 2.25945831649
+save dic
+save model
+end of training
+...
 ```
 
 - inference
