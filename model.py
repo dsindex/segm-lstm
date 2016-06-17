@@ -26,14 +26,6 @@ def RNN(_X, _istate, _weights, _biases, n_hidden, n_steps, n_input, early_stop):
 	lstm_cell = rnn_cell.BasicLSTMCell(n_hidden, forget_bias=1.0)
 	# Split data because rnn cell needs a list of inputs for the RNN inner loop
 	_X = tf.split(0, n_steps, _X) # n_steps splits each of which contains (?, n_hidden)
-	'''
-	ex)
-	i  split0  split1  split2 .... split(n-1)
-	0  (8)     ...                 (8)
-	1  (8)     ...                 (8)
-	...
-	m  (8)     ...                 (8)
-	'''
 	# Get lstm cell output
 	outputs, states = rnn.rnn(lstm_cell, _X, initial_state=_istate, sequence_length=early_stop)
 	final_outputs = []
