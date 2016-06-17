@@ -41,8 +41,11 @@ n_steps = 20
     move next batch pointer(sliding window)
 	merge result into one array
 	decoding
+```
 
-$ python segm_vlen.py --train=train.txt --dic=dic.pickle
+- train
+```
+$ python segm_train.py --train=train.txt --model=model
 ...
 (i,seq) : (2,20),cost : 2.24725
 (i,seq) : (2,30),cost : 1.8682
@@ -56,3 +59,7 @@ out = 아버지가 방에 들어 가신다
 out = 기업들이 극한 구조조정을 통해
 ```
 
+- inference
+```
+
+```

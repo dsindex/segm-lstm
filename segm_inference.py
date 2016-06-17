@@ -193,6 +193,7 @@ if __name__ == '__main__':
 	parser.add_option("--verbose", action="store_const", const=1, dest="verbose", help="verbose mode")
 	parser.add_option("-t", "--train", dest="train_path", help="train file path", metavar="train_path")
 	parser.add_option("-d", "--dic", dest="dic_path", help="dic file path(will be saved)", metavar="dic_path")
+	parser.add_option("-m", "--model", dest="model_path", help="model file path(will be saved)", metavar="model_path")
 	(options, args) = parser.parse_args()
 	if options.verbose == 1 : VERBOSE = 1
 	train_path = options.train_path
@@ -201,6 +202,10 @@ if __name__ == '__main__':
 		exit(1)
 	dic_path = options.dic_path
 	if dic_path == None :
+		parser.print_help()
+		exit(1)
+	model_path = options.model_path
+	if model_path == None :
 		parser.print_help()
 		exit(1)
 
