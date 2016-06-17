@@ -29,7 +29,7 @@ out = 아버지가 방에 들어가신다.
 ```
 let's try to use sliding window method and early stop.
 
-n_steps = 40
+n_steps = 100
 
 - training
   if len(sentence) >= 1 and len(sentence) < n_steps : padding with '\t'
@@ -45,16 +45,17 @@ n_steps = 40
 
 - train
 ```
-$ python train.py --train=train.txt --validation=train.txt --model=model
+$ python train.py --train=train.txt --validation=validation.txt --model=model
+
+$ python train.py --train=big.txt --validation=validation.txt --model=model
 ...
-seq : 96,total cost : 2.36490138248
-seq : 97,total cost : 2.32890268601
-seq : 98,total cost : 2.29376351926
-seq : 99,total cost : 2.25945831649
+7 th sentence ... done
+8 th sentence ... done
+9 th sentence ... done
+seq : 29,validation cost : 124.562777519,validation accuracy : 0.942500010133
 save dic
-save model
+save model(final)
 end of training
-...
 ```
 
 - inference
@@ -67,4 +68,21 @@ out = 아버지가 방에 들어 가신다.
 out = SK이노베이션, GS, S-Oil, 대림산업, 현대중공업 등 대규모 적자를 내던
 out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀이된다.
+
+$ python inference.py --model=model < test.txt
+...
+model restored from model/segm.ckpt
+out = 이것 을 띄어쓰기 하면어 떻게 될 까 요.
+out = 아버 지 가방에들 어가 신다 .
+out = SK이노베이 션, GS , S -Oil, 대림산 업, 현대중공 업등 대규모적자 를 내 던
+out = 기업들이 극 한 구조조정을 통해흑자로 전환하거나
+out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 풀이 된 다.
+
+# it seems that training data is not enough...
+```
+
+- development note
+```
+- training speed is very slow despite of using GPU. 
+  how can it be faster?
 ```

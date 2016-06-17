@@ -39,7 +39,7 @@ if __name__ == '__main__':
 		os.makedirs(model_dir)
 
 	# config
-	n_steps = 40                    # time steps
+	n_steps = 100                   # time steps
 	padd = '\t'                     # special padding chracter
 	char_dic = util.build_dictionary(train_path, padd)
 	n_input = len(char_dic)         # input dimension, vocab size
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
 	batch_size = 1
 	learning_rate = 0.01
-	training_iters = 100
+	training_iters = 30
 	logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
 	targets = y_
 	seq_weights = tf.ones([n_steps * batch_size])
@@ -78,7 +78,10 @@ if __name__ == '__main__':
 	cost = tf.reduce_sum(loss) / batch_size 
 	optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
-	NUM_THREADS = 10
+	correct_pred = tf.equal(tf.argmax(logits,1), tf.cast(y_, tf.int64))
+	accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+
+	NUM_THREADS = 1
 	config = tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS,
 			inter_op_parallelism_threads=NUM_THREADS,
 			log_device_placement=False)
@@ -113,18 +116,18 @@ if __name__ == '__main__':
 				feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 				sess.run(optimizer, feed_dict=feed)
 				pos = next_pos
+			print '%s th sentence ... done' % i
 			i += 1
 		util.close_file(fid)
 		# validation
-		total_cost = 0
+		validation_cost = 0
+		validation_accuracy = 0
 		for validation_xs, validation_ys, count in validation_data :
 			feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
-			total_cost += sess.run(cost, feed_dict=feed)
-		print 'seq : %s' % (seq) + ',' + 'total cost : %s' % total_cost
-		# save model
-		if seq % 10 == 0 :
-			print 'save model(at %s)' % seq
-			saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
+			validation_cost += sess.run(cost, feed_dict=feed)
+			validation_accuracy += sess.run(accuracy, feed_dict=feed)
+		validation_accuracy /= len(validation_data)
+		print 'seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s' % (validation_accuracy)
 		seq += 1
 
 	print 'save dic'

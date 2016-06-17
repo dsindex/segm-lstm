@@ -28,7 +28,7 @@ if __name__ == '__main__':
 	dic_path = model_dir + '/' + 'dic.pickle'
 		
 	# config
-	n_steps = 40                    # time steps
+	n_steps = 100                   # time steps
 	padd = '\t'                     # special padding chracter
 	with open(dic_path, 'rb') as handle :
 		char_dic = pickle.load(handle)    # load dic
@@ -99,6 +99,7 @@ if __name__ == '__main__':
 			c_istate = np.zeros((batch_size, 2*n_hidden))
 			feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 			result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
+			
 			# overlapped copy and merge
 			j = 0
 			result_size = len(result)
