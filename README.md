@@ -29,7 +29,7 @@ out = 아버지가 방에 들어가신다.
 ```
 let's try to use sliding window method and early stop.
 
-n_steps = 20
+n_steps = 40
 
 - training
   if len(sentence) >= 1 and len(sentence) < n_steps : padding with '\t'
@@ -50,16 +50,17 @@ $ python train.py --train=train.txt --model=model
 (i,seq) : (2,20),cost : 2.24725
 (i,seq) : (2,30),cost : 1.8682
 (i,seq) : (2,40),cost : 1.5787
-
-이것을띄어쓰기하면어떻게될까요
-out = 이것을 띄어 쓰기하면 어떻게 될까요
-아버지가방에들어가신다
-out = 아버지가 방에 들어 가신다
-기업들이극한구조조정을통해
-out = 기업들이 극한 구조조정을 통해
+....
 ```
 
 - inference
 ```
-
+$ python inference.py --model=model < test.txt
+...
+model restored from model/segm.ckpt
+out = 이것을 띄어 쓰기하면 어 떻게 될까요.
+out = 아버지가 방에 들어 가신다.
+out = SK이노베이션, GS, S-Oil, 대림산업, 현대중공업 등 대규모 적자를 내던
+out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
+out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀이된다.
 ```

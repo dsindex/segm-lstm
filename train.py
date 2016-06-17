@@ -34,11 +34,11 @@ if __name__ == '__main__':
 		os.makedirs(model_dir)
 
 	# config
-	n_steps = 20                    # time steps
+	n_steps = 40                    # time steps
 	padd = '\t'                     # special padding chracter
 	char_dic = util.build_dictionary(train_path, padd)
 	n_input = len(char_dic)         # input dimension, vocab size
-	n_hidden = 8                    # hidden layer size
+	n_hidden = 16                   # hidden layer size
 	n_classes = 2                   # output classes,  space or not
 	vocab_size = n_input
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
 	batch_size = 1
 	learning_rate = 0.01
-	training_iters = 50
+	training_iters = 200
 	logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
 	targets = y_
 	seq_weights = tf.ones([n_steps * batch_size])
@@ -118,5 +118,3 @@ if __name__ == '__main__':
 	checkpoint_file = 'segm.ckpt'
 	saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
 	print 'end of training'
-	# ------------------------------------------------------------------------------------
-

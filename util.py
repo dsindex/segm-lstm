@@ -124,3 +124,19 @@ def test_next_batch(train_path, char_dic, vocab_size, n_steps, padd) :
 			print batch_ys
 			pos = next_pos
 	close_file(fid)
+
+def to_sentence(tag_vector, sentence) :
+	out = []
+	j = 0
+	tag_vector_size = len(tag_vector)
+	sentence_size = len(sentence)
+	while j < tag_vector_size and j < sentence_size :
+		tag = tag_vector[j]
+		if tag == CLASS_1 :
+			out.append(sentence[j])
+			if sentence[j] != ' ' : out.append(' ')
+		else :
+			out.append(sentence[j])
+		j += 1
+	n_sentence = ''.join(out)
+	return snorm(n_sentence).encode('utf-8')
