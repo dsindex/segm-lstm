@@ -42,13 +42,17 @@ n_steps = 20
 	merge result into one array
 	decoding
 
-$ python segm_vlen.py
+$ python segm_vlen.py --train=train.txt --dic=dic.pickle
 ...
-seq : 470,cost : 0.00284278
-seq : 480,cost : 0.00167446
-seq : 490,cost : 0.00134679
-out = 이것을 띄어쓰기하면 어떻게 될까요.
-out = 아버지가 방에 들어가 신다.
-out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
+(i,seq) : (2,20),cost : 2.24725
+(i,seq) : (2,30),cost : 1.8682
+(i,seq) : (2,40),cost : 1.5787
+
+이것을띄어쓰기하면어떻게될까요
+out = 이것을 띄어 쓰기하면 어떻게 될까요
+아버지가방에들어가신다
+out = 아버지가 방에 들어 가신다
+기업들이극한구조조정을통해
+out = 기업들이 극한 구조조정을 통해
 ```
 
