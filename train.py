@@ -28,9 +28,6 @@ if __name__ == '__main__':
 		parser.print_help()
 		exit(1)
 	validation_path = options.validation_path
-	if validation_path == None :
-		parser.print_help()
-		exit(1)
 	model_dir = options.model_dir
 	if model_dir == None :
 		parser.print_help()
@@ -92,7 +89,8 @@ if __name__ == '__main__':
 	checkpoint_dir = model_dir
 	checkpoint_file = 'segm.ckpt'
 
-	validation_data = util.get_validation_data(validation_path, char_dic, vocab_size, n_steps, padd)
+	if validation_path :
+		validation_data = util.get_validation_data(validation_path, char_dic, vocab_size, n_steps, padd)
 
 	seq = 0
 	while seq < training_iters :
@@ -120,14 +118,15 @@ if __name__ == '__main__':
 			i += 1
 		util.close_file(fid)
 		# validation
-		validation_cost = 0
-		validation_accuracy = 0
-		for validation_xs, validation_ys, count in validation_data :
-			feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
-			validation_cost += sess.run(cost, feed_dict=feed)
-			validation_accuracy += sess.run(accuracy, feed_dict=feed)
-		validation_accuracy /= len(validation_data)
-		print 'seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s' % (validation_accuracy)
+		if validation_path :
+			validation_cost = 0
+			validation_accuracy = 0
+			for validation_xs, validation_ys, count in validation_data :
+				feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
+				validation_cost += sess.run(cost, feed_dict=feed)
+				validation_accuracy += sess.run(accuracy, feed_dict=feed)
+			validation_accuracy /= len(validation_data)
+			print 'seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s' % (validation_accuracy)
 		seq += 1
 
 	print 'save dic'
