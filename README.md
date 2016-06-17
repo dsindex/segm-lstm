@@ -12,7 +12,7 @@ segm-lstm
 	- y : '0 0 1 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0'
 	  - 1 : if next char is space
 	  - 0 : if next char is not space
-    - learn to predict next tag using LSTM
+    - learn to predict tag sequence
 
 - sketch code
 ```
@@ -27,34 +27,22 @@ out = 아버지가 방에 들어가신다.
 
 - how to deal variable-length input
 ```
-if batch_size = 1 and n_steps depends on the size of input sentence, 
-we might think :
+let's try to use sliding window method and early stop.
 
-n_steps = tf.placeholder("int32")
-x = tf.placeholder("float", [None, n_steps, n_input])
-y_ = tf.placeholder("int32", [None, n_steps])
-
-but this usage is not possible.
-
-let's try to use sliding window method :
-
-min_size = 5
 n_steps = 20
 
 - training
-  if len(sentence) < min_size : continue
-  if len(sentence) >= min_size and len(sentence) < n_steps : padding with '\t'
+  if len(sentence) >= 1 and len(sentence) < n_steps : padding with '\t'
   if len(sentence) > n_steps : move next batch pointer(sliding window)
 
 - inference
-  if len(sentence) < min_size : continue
-  if len(sentence) >= min_size and len(sentence) < n_steps : padding with '\t'
+  if len(sentence) >= 1 and len(sentence) < n_steps : padding with '\t'
   if len(sentence) > n_steps : 
     move next batch pointer(sliding window)
 	merge result into one array
 	decoding
 
-$ python segm_lstm_vlen.py
+$ python segm_vlen.py
 ...
 seq : 470,cost : 0.00284278
 seq : 480,cost : 0.00167446

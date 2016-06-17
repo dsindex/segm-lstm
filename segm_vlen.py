@@ -8,7 +8,7 @@ from tensorflow.models.rnn import rnn, rnn_cell
 import numpy as np
 
 CLASS_1 = 1  # next is space
-CLASS_0 = 0  # next is no space
+CLASS_0 = 0  # next is not space
 
 def weight_variable(shape):
 	initial = tf.truncated_normal(shape, stddev=0.1)
@@ -71,8 +71,7 @@ def get_xy_data(sentence, pos, n_steps, padd) :
 		x_data += [padd]*diff
 		y_data += [CLASS_0]*diff
 		next_pos = -1
-
-	return x_data, y_data, next_pos
+	return x_data, y_data, next_pos, count
 
 def next_batch(sentences, begin, pos, char_dic, vocab_size, n_steps, padd) :
 	'''
@@ -87,14 +86,14 @@ def next_batch(sentences, begin, pos, char_dic, vocab_size, n_steps, padd) :
 	batch_xs = []
 	batch_ys = []
 	sentence = sentences[begin]
-	x_data, y_data, next_pos = get_xy_data(sentence, pos, n_steps, padd)
+	x_data, y_data, next_pos, count = get_xy_data(sentence, pos, n_steps, padd)
 	x_data = [char_dic[c] for c in x_data]
 	x_data = [one_hot(i, vocab_size) for i in x_data]
 	batch_xs.append(x_data)
 	batch_ys.append(y_data)
 	batch_xs = np.array(batch_xs, dtype='f')
 	batch_ys = np.array(batch_ys, dtype='int32')
-	return batch_xs, batch_ys, next_pos
+	return batch_xs, batch_ys, next_pos, count
 
 def test_next_batch(sentences, char_dic, vocab_size, n_steps, padd) :
 	begin = 0
@@ -102,8 +101,10 @@ def test_next_batch(sentences, char_dic, vocab_size, n_steps, padd) :
 	while begin < num_sentences :
 		pos = 0
 		while pos != -1 :
-			batch_xs, batch_ys, next_pos = next_batch(sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
-			print 'next_pos : ' + str(next_pos) + '\t' + sentences[begin][pos:pos+n_steps]
+			batch_xs, batch_ys, next_pos, count = next_batch(sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
+			print 'window : ' + sentences[begin][pos:pos+n_steps]
+			print 'count : ' + str(count)
+			print 'next_pos : ' + str(next_pos)
 			print batch_ys
 			pos = next_pos
 		begin += 1
@@ -123,7 +124,6 @@ learning_rate = 0.01
 training_iters = 500
 
 n_steps = 20                    # time steps
-min_size = 5                    # if size of sentence is bellow this, do not training/inference
 padd = '\t'                     # special padding chracter
 
 char_rdic, char_dic = build_dictionary(sentences, padd)
@@ -134,12 +134,13 @@ vocab_size = n_input
 
 test_next_batch(sentences, char_dic, vocab_size, n_steps, padd)
 
-x = tf.placeholder("float", [None, n_steps, n_input])
-y_ = tf.placeholder("int32", [None, n_steps])
+x = tf.placeholder(tf.float32, [None, n_steps, n_input])
+y_ = tf.placeholder(tf.int32, [None, n_steps])
+early_stop = tf.placeholder(tf.int32)
 
 # LSTM layer
 # 2 x n_hidden length (state & cell)
-istate = tf.placeholder("float", [None, 2*n_hidden])
+istate = tf.placeholder(tf.float32, [None, 2*n_hidden])
 weights = {
 	'hidden' : weight_variable([n_input, n_hidden]),
 	'out' : weight_variable([n_hidden, n_classes])
@@ -149,7 +150,7 @@ biases = {
 	'out': bias_variable([n_classes])
 }
 
-def RNN(_X, _istate, _weights, _biases, n_steps):
+def RNN(_X, _istate, _weights, _biases, n_steps, early_stop):
 	# input _X shape: (batch_size, n_steps, n_input)
 	# switch n_steps and batch_size, (n_steps, batch_size, n_input)
 	_X = tf.transpose(_X, [1, 0, 2])
@@ -172,7 +173,7 @@ def RNN(_X, _istate, _weights, _biases, n_steps):
 	m  (8)     ...                 (8)
 	'''
 	# Get lstm cell output
-	outputs, states = rnn.rnn(lstm_cell, _X, initial_state=_istate)
+	outputs, states = rnn.rnn(lstm_cell, _X, initial_state=_istate, sequence_length=early_stop)
 	final_outputs = []
 	for output in outputs :
 		# Linear activation
@@ -182,7 +183,7 @@ def RNN(_X, _istate, _weights, _biases, n_steps):
 
 
 # training
-y = RNN(x, istate, weights, biases, n_steps)
+y = RNN(x, istate, weights, biases, n_steps, early_stop)
 
 batch_size = 1
 logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
@@ -193,7 +194,10 @@ cost = tf.reduce_sum(loss) / batch_size
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 NUM_THREADS = 1
-sess = tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS,inter_op_parallelism_threads=NUM_THREADS,log_device_placement=False))
+config = tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS,
+		inter_op_parallelism_threads=NUM_THREADS,
+		log_device_placement=False)
+sess = tf.Session(config=config)
 init = tf.initialize_all_variables()
 sess.run(init)
 
@@ -202,13 +206,15 @@ while seq < training_iters :
 	begin = seq % num_sentences
 	pos = 0
 	while pos != -1 :
-		batch_xs, batch_ys, next_pos = next_batch(sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
+		batch_xs, batch_ys, next_pos, count = next_batch(sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
 		'''
-		print 'next_pos : ' + str(next_pos) + '\t' + sentences[begin][pos:pos+n_steps]
+		print 'window : ' + sentences[begin][pos:pos+n_steps]
+		print 'count : ' + str(count)
+		print 'next_pos : ' + str(next_pos)
 		print batch_ys
 		'''
 		c_istate = np.zeros((batch_size, 2*n_hidden))
-		feed={x: batch_xs, y_: batch_ys, istate: c_istate}
+		feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 		sess.run(optimizer, feed_dict=feed)
 		pos = next_pos
 	if seq % 10 == 0 : 
@@ -216,7 +222,7 @@ while seq < training_iters :
 	seq += 1
 
 
-
+# --------------------------------------------------------------------------------------------
 
 
 # inference
@@ -250,12 +256,15 @@ while i < len(test_sentences) :
 	tag_vector = [-1]*(sentence_size+n_steps) # buffer n_steps
 	pos = 0
 	while pos != -1 :
-		batch_xs, batch_ys, next_pos = next_batch(test_sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
+		batch_xs, batch_ys, next_pos, count = next_batch(test_sentences, begin, pos, char_dic, vocab_size, n_steps, padd)
 		'''	
-		print 'next_pos : ' + str(next_pos) + '\t' + sentence[pos:pos+n_steps]
+		print 'window : ' + sentence[pos:pos+n_steps]
+		print 'count : ' + str(count)
+		print 'next_pos : ' + str(next_pos)
+		print batch_ys
 		'''
 		c_istate = np.zeros((batch_size, 2*n_hidden))
-		feed={x: batch_xs, y_: batch_ys, istate: c_istate}
+		feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 		result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
 		# overlapped copy and merge
 		j = 0
