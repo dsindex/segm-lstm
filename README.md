@@ -45,7 +45,7 @@ n_steps = 20
 
 - train
 ```
-$ python segm_train.py --train=train.txt --model=model
+$ python train.py --train=train.txt --model=model
 ...
 (i,seq) : (2,20),cost : 2.24725
 (i,seq) : (2,30),cost : 1.8682

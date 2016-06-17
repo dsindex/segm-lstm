@@ -2,6 +2,7 @@
 #-*- coding: utf8 -*-
 
 import sys
+import re
 import numpy as np
 
 CLASS_1 = 1  # next is space
