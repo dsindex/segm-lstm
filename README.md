@@ -81,8 +81,13 @@ out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 
 # it seems that training data is not enough...
 ```
 
+- character-based word2vec
+```
+```
+
 - development note
 ```
 - training speed is very slow despite of using GPU. 
-  how can it be faster?
+  how make it faster?
+  : what about using word2vec(character-based)?
 ```
