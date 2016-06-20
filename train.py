@@ -36,11 +36,11 @@ if __name__ == '__main__':
 		os.makedirs(model_dir)
 
 	# config
-	n_steps = 100                   # time steps
+	n_steps = 30                    # time steps
 	padd = '\t'                     # special padding chracter
 	char_dic = util.build_dictionary(train_path, padd)
 	n_input = len(char_dic)         # input dimension, vocab size
-	n_hidden = 16                   # hidden layer size
+	n_hidden = 8                    # hidden layer size
 	n_classes = 2                   # output classes,  space or not
 	vocab_size = n_input
 	'''
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 				feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 				sess.run(optimizer, feed_dict=feed)
 				pos = next_pos
-			print '%s th sentence ... done' % i
+			sys.stderr.write('%s th sentence ... done\n' % i)
 			i += 1
 		util.close_file(fid)
 		# validation
@@ -126,13 +126,13 @@ if __name__ == '__main__':
 				validation_cost += sess.run(cost, feed_dict=feed)
 				validation_accuracy += sess.run(accuracy, feed_dict=feed)
 			validation_accuracy /= len(validation_data)
-			print 'seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s' % (validation_accuracy)
+			sys.stderr.write('seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
 		seq += 1
 
-	print 'save dic'
+	sys.stderr.write('save dic\n')
 	dic_path = model_dir + '/' + 'dic.pickle'
 	with open(dic_path, 'wb') as handle :
 		pickle.dump(char_dic, handle)
-	print 'save model(final)'
+	sys.stderr.write('save model(final)\n')
 	saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
-	print 'end of training'
+	sys.stderr.write('end of training\n')

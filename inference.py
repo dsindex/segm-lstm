@@ -28,12 +28,12 @@ if __name__ == '__main__':
 	dic_path = model_dir + '/' + 'dic.pickle'
 		
 	# config
-	n_steps = 100                   # time steps
+	n_steps = 30                    # time steps
 	padd = '\t'                     # special padding chracter
 	with open(dic_path, 'rb') as handle :
 		char_dic = pickle.load(handle)    # load dic
 	n_input = len(char_dic)         # input dimension, vocab size
-	n_hidden = 16                   # hidden layer size
+	n_hidden = 8                    # hidden layer size
 	n_classes = 2                   # output classes,  space or not
 	vocab_size = n_input
 	
@@ -75,7 +75,6 @@ if __name__ == '__main__':
 		sys.stderr.write("no checkpoint found" + '\n')
 		sys.exit(-1)
 	
-	batch_size = 1
 	i = 0
 	while 1 :
 		try : line = sys.stdin.readline()
@@ -90,12 +89,12 @@ if __name__ == '__main__':
 		pos = 0
 		while pos != -1 :
 			batch_xs, batch_ys, next_pos, count = util.next_batch(sentence, pos, char_dic, vocab_size, n_steps, padd)
-			'''	
+			
 			print 'window : ' + sentence[pos:pos+n_steps]
 			print 'count : ' + str(count)
 			print 'next_pos : ' + str(next_pos)
 			print batch_ys
-			'''
+			
 			c_istate = np.zeros((batch_size, 2*n_hidden))
 			feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 			result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)

@@ -76,6 +76,8 @@ def get_xy_data(sentence, pos, n_steps, padd) :
 				if c == ' ' :
 					space_count += 1
 					if space_count == 1 : break
+				if i - j >= 12 : # no prev space atmost 12
+					break
 				j -= 1
 			if j <= i - 1 : 
 				next_pos = j+1

@@ -29,7 +29,7 @@ out = 아버지가 방에 들어가신다.
 ```
 let's try to use sliding window method and early stop.
 
-n_steps = 100
+n_steps = 30
 
 - training
   if len(sentence) >= 1 and len(sentence) < n_steps : padding with '\t'
