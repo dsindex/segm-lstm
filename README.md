@@ -83,6 +83,10 @@ out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 
 
 - character-based word2vec
 ```
+# usage : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
+
+$ 
+
 ```
 
 - development note
