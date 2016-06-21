@@ -84,7 +84,7 @@ out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 
 - character-based word2vec
 ```
 # usage : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
-# for training non-ascii data
+# modify save_vocab() to train non-ascii data
 $ cd tensorflow/tensorflow/models/embedding
 $ vi word2vec_optimized.py
   ...
@@ -104,13 +104,15 @@ $ python word2vec_optimized.py --train_data=train.txt --eval_data=questions-word
 # test word2vec
 $ cd segm-lstm
 $ python test_word2vec.py --model_path=tmp
+
+# you can dump embedding by using embedding_dump() in test_word2vec.py
+
 ```
 
 - development note
 ```
 - training speed is very slow despite of using GPU. 
-  how make it faster?
-  : what about using word2vec(character-based)?
-  using a pretrained word embedding
-  : https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
+  how make it faster? what about using word2vec(character-based)?
+- using a pretrained word embedding
+  https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
 ```
