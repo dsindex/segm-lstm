@@ -99,8 +99,11 @@ $ vi word2vec_optimized.py
 # preprocessing for character-based
 
 # train word2vec
+$ python word2vec_optimized.py --train_data=train.txt --eval_data=questions-words.txt --save_path=tmp
 
 # test word2vec
+$ cd segm-lstm
+$ python test_word2vec.py --model_path=tmp
 ```
 
 - development note
