@@ -199,6 +199,8 @@ def main(_):
       checkpoint_dir = opts.model_path
       ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
       if ckpt and ckpt.model_checkpoint_path :
+        print('checkpoint_dir = ', checkpoint_dir)
+        print('checkpoint_path = ', ckpt.model_checkpoint_path)
         model.saver.restore(session, ckpt.model_checkpoint_path)
         sys.stderr.write("model restored from %s\n" %(ckpt.model_checkpoint_path))
       else :
