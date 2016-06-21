@@ -2,7 +2,7 @@ segm-lstm
 ===
 
 - description
-  - string segmentation using LSTM(tensorflow)
+  - string segmentation(auto-spacing) using LSTM(tensorflow)
     - input
       - string, ex) '이것을띄어쓰기하면어떻게될까요'
     - output
@@ -84,9 +84,23 @@ out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 
 - character-based word2vec
 ```
 # usage : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
+# for training non-ascii data
+$ cd tensorflow/tensorflow/models/embedding
+$ vi word2vec_optimized.py
+  ...
+  def save_vocab(self):
+    """Save the vocabulary to a file so the model can be reloaded."""
+    opts = self._options
+    with open(os.path.join(opts.save_path, "vocab.txt"), "w") as f:
+      for i in xrange(opts.vocab_size):
+        f.write("%s %d\n" % (tf.compat.as_text(opts.vocab_words[i]).encode('utf-8'),
+                             opts.vocab_counts[i]))
+  ...
+# preprocessing for character-based
 
-$ 
+# train word2vec
 
+# test word2vec
 ```
 
 - development note
@@ -94,4 +108,6 @@ $
 - training speed is very slow despite of using GPU. 
   how make it faster?
   : what about using word2vec(character-based)?
+  using a pretrained word embedding
+  : https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
 ```
