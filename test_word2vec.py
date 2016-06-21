@@ -132,6 +132,7 @@ class Word2Vec(object):
     tf.initialize_all_variables().run()
 
     # Embedding lookup
+    self._nemb = nemb
     self._nearby_emb = nearby_emb
 
     self.saver = tf.train.Saver()
@@ -175,10 +176,16 @@ class Word2Vec(object):
       word = self._id2word.get(id, 'UNK')
       print('word = %s' % word)
       '''
-    embeddings = self._session.run([self._nearby_emb], {self._nearby_word:ids})
+    embeddings = self._session.run(self._nearby_emb, {self._nearby_word:ids})
     for i in xrange(len(words)):
       print("\n%s\n=====================================" % (words[i]))
-      print(embeddings[0][i])
+      print(embeddings[i])
+  
+  def embedding_dump(self):
+    """Dump word embeddings"""
+    nemb = self._session.run(self._nemb)
+    for i, emb in enumerate(nemb):
+      print(i, emb)
 
 def main(_):
   """Test a word2vec model."""
@@ -201,6 +208,7 @@ def main(_):
       print("analogy = %s" % c)
       model.nearby([b'france', b'paris', b'russia'])
       model.embedding_lookup([b'france', b'paris', b'russia'])
+      #model.embedding_dump()
       while 1:
         try : line = sys.stdin.readline()
         except KeyboardInterrupt : break
