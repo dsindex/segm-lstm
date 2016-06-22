@@ -25,7 +25,7 @@ out = 이것을 띄어쓰기하면 어떻게 될까요
 out = 아버지가 방에 들어가신다.
 ```
 
-- how to deal variable-length input
+- how to handle variable-length input
 ```
 let's try to use sliding window method and early stop.
 
@@ -43,9 +43,18 @@ n_steps = 30
 	decoding
 ```
 
-- train
+- train and inference
 ```
 $ python train.py --train=train.txt --validation=validation.txt --model=model
+$ python inference.py --model=model < test.txt
+...
+model restored from model/segm.ckpt
+out = 이것을 띄어 쓰기하면 어 떻게 될까요.
+out = 아버지가 방에 들어 가신다.
+out = SK이노베이션, GS, S-Oil, 대림산업, 현대중공업 등 대규모 적자를 내던
+out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
+out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀이된다.
+
 
 $ python train.py --train=big.txt --validation=validation.txt --model=model
 ...
@@ -56,19 +65,6 @@ seq : 29,validation cost : 124.562777519,validation accuracy : 0.942500010133
 save dic
 save model(final)
 end of training
-```
-
-- inference
-```
-$ python inference.py --model=model < test.txt
-...
-model restored from model/segm.ckpt
-out = 이것을 띄어 쓰기하면 어 떻게 될까요.
-out = 아버지가 방에 들어 가신다.
-out = SK이노베이션, GS, S-Oil, 대림산업, 현대중공업 등 대규모 적자를 내던
-out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
-out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀이된다.
-
 $ python inference.py --model=model < test.txt
 ...
 model restored from model/segm.ckpt
@@ -79,6 +75,8 @@ out = 기업들이 극 한 구조조정을 통해흑자로 전환하거나
 out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 풀이 된 다.
 
 # it seems that training data is not enough...
+
+
 ```
 
 - character-based word2vec
