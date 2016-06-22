@@ -21,6 +21,7 @@ if __name__ == '__main__':
 	parser.add_option("-t", "--train", dest="train_path", help="train file path", metavar="train_path")
 	parser.add_option("-v", "--validation", dest="validation_path", help="validation file path", metavar="validation_path")
 	parser.add_option("-m", "--model", dest="model_dir", help="dir path to save model", metavar="model_dir")
+	parser.add_option("-i", "--iters", dest="training_iters", help="training iterations", metavar="training_iters")
 	(options, args) = parser.parse_args()
 	if options.verbose == 1 : VERBOSE = 1
 	train_path = options.train_path
@@ -34,6 +35,9 @@ if __name__ == '__main__':
 		exit(1)
 	if not os.path.isdir(model_dir) :
 		os.makedirs(model_dir)
+	training_iters = options.training_iters
+	if not training_iters : training_iters = 30
+	training_iters = int(training_iters)
 
 	# config
 	n_steps = 30                    # time steps
@@ -67,7 +71,6 @@ if __name__ == '__main__':
 
 	batch_size = 1
 	learning_rate = 0.01
-	training_iters = 30
 	logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
 	targets = y_
 	seq_weights = tf.ones([n_steps * batch_size])
@@ -138,3 +141,4 @@ if __name__ == '__main__':
 	sys.stderr.write('save model(final)\n')
 	saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
 	sys.stderr.write('end of training\n')
+	sess.close()

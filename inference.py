@@ -121,3 +121,5 @@ if __name__ == '__main__':
 		print 'out = ' + util.to_sentence(tag_vector, sentence)
 
 		i += 1
+
+	sess.close()

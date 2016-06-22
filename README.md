@@ -45,7 +45,7 @@ n_steps = 30
 
 - train and inference
 ```
-$ python train.py --train=train.txt --validation=validation.txt --model=model
+$ python train.py --train=train.txt --validation=validation.txt --model=model --training_iters=30
 
 $ python inference.py --model=model < test.txt
 ...
@@ -57,15 +57,7 @@ out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀이된다.
 
 
-$ python train.py --train=big.txt --validation=validation.txt --model=model
-...
-7 th sentence ... done
-8 th sentence ... done
-9 th sentence ... done
-seq : 29,validation cost : 124.562777519,validation accuracy : 0.942500010133
-save dic
-save model(final)
-end of training
+$ python train.py --train=big.txt --validation=validation.txt --model=model --training_iters=3
 
 $ python inference.py --model=model < test.txt
 ...
@@ -130,10 +122,16 @@ $ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump
 
 - train and inference with character embedding
 ```
-$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb
+$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb --training_iters=3
 
 $ python inference_emb.py -e emb -m model_emb < test.txt
-
+...
+model restored from model_emb/segm.ckpt
+out = 이것을 띄어쓰기하면 어떻게 될 까요.
+out = 아버지가 방에 들어가 신다.
+out = SK이노베이션, GS, S-Oil, 대림산업, 현대중공업등대규모적자를 내던
+out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
+out = 적자폭을 축소한 것 이 영업이익개선을 이 끈것으로 풀이된 다.
 ```
 
 - development note
@@ -145,4 +143,6 @@ $ python inference_emb.py -e emb -m model_emb < test.txt
   we need some tricky code works that process file to generate batch using `yield`
 - using a pretrained word embedding
   https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
+- when train_emb.py is running, it is not possible to run train.py simultaneously.
+  we need to figure out.
 ```

@@ -91,12 +91,12 @@ if __name__ == '__main__':
 		pos = 0
 		while pos != -1 :
 			batch_xs, batch_ys, next_pos, count = util.next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd)
-			
+			'''
 			print 'window : ' + sentence[pos:pos+n_steps].encode('utf-8')
 			print 'count : ' + str(count)
 			print 'next_pos : ' + str(next_pos)
 			print batch_ys
-			
+			'''
 			c_istate = np.zeros((batch_size, 2*n_hidden))
 			feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 			result = sess.run(tf.arg_max(logits, 1), feed_dict=feed)
@@ -123,3 +123,5 @@ if __name__ == '__main__':
 		print 'out = ' + util.to_sentence(tag_vector, sentence)
 
 		i += 1
+
+	sess.close()
