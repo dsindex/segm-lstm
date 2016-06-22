@@ -142,7 +142,7 @@ $ python inference_emb.py -e emb -m model_emb < test.txt
   how make it faster? what about using word2vec(character-based)?
   and more batch_size?
 - increasing batch_size
-  some tricky code works are needed
+  we need some tricky code works that process file to generate batch using `yield`
 - using a pretrained word embedding
   https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
 ```
