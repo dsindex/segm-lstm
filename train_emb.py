@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
 	batch_size = 1
 	learning_rate = 0.01
-	training_iters = 1
+	training_iters = 3
 	logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
 	targets = y_
 	seq_weights = tf.ones([n_steps * batch_size])

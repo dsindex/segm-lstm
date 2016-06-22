@@ -92,7 +92,7 @@ if __name__ == '__main__':
 		while pos != -1 :
 			batch_xs, batch_ys, next_pos, count = util.next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd)
 			
-			print 'window : ' + sentence[pos:pos+n_steps]
+			print 'window : ' + sentence[pos:pos+n_steps].encode('utf-8')
 			print 'count : ' + str(count)
 			print 'next_pos : ' + str(next_pos)
 			print batch_ys

@@ -160,10 +160,12 @@ def to_sentence(tag_vector, sentence) :
 	n_sentence = ''.join(out)
 	return snorm(n_sentence).encode('utf-8')
 
+# -------------------------------------------------------------------------
+
 def build_dictionary_emb(embedding_dir) :
 	embedding_path = embedding_dir + '/' + 'embedding.pickle'
 	with open(embedding_path, 'rb') as handle :
-		embedding = pickle.load(handle)
+		embeddings = pickle.load(handle)
 	id2ch = {}
 	vocab_path = embedding_dir + '/' + 'vocab.txt'
 	idx = 0
@@ -172,13 +174,17 @@ def build_dictionary_emb(embedding_dir) :
 			ch, count = line.split(' ')
 			id2ch[idx] = ch.decode('utf-8')
 			idx += 1
+	assert(idx == len(embeddings))
 	ch2id = {}
 	id2emb = {}
 	for i, ch in id2ch.iteritems() :
 		ch2id[ch] = i
-		if i in embedding : id2emb[i] = embedding[i]
-		else : id2emb[i] = embedding[0] # 'UNK' embedding 
-	return ch2id, id2ch, id2emb, len(embedding[0])
+		try : id2emb[i] = embeddings[i]
+		except Exception, e :
+			sys.stderr.write('vocab.txt, embedding.pickle not aligned\n')
+			sys.exit(1)
+	embedding_dim = len(embeddings[0])
+	return ch2id, id2ch, id2emb, embedding_dim
 
 def next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd) :
 	'''
@@ -199,6 +205,7 @@ def next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd) :
 		if c in char_dic : id = char_dic[c]
 		'''
 		print 'c, id = ', c.encode('utf-8'), id
+		print id2emb[id]
 		'''
 		tmp_x_data.append(id2emb[id])
 	x_data = tmp_x_data

@@ -176,6 +176,9 @@ class Word2Vec(object):
       print('id = %s' % id)
       word = self._id2word.get(id, 'UNK')
       print('word = %s' % word)
+    nemb = self._session.run(self._nemb)
+    id = 10
+    print(id, nemb[id])
     '''
     embeddings = self._session.run(self._nearby_emb, {self._nearby_word:ids})
     for i in xrange(len(words)):
@@ -190,6 +193,8 @@ class Word2Vec(object):
     with open(embedding_file, 'wb') as handle:
       pickle.dump(nemb, handle)
     '''
+    id = 10
+    print(id, nemb[id])
     for i, emb in enumerate(nemb):
       print(i, emb)
     '''

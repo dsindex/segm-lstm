@@ -130,7 +130,7 @@ $ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump
 
 - train and inference with character embedding
 ```
-$ python train_emb.py --train=bigbig.txt --validation=validation.txt --embedding=emb --model=model_emb
+$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb
 
 $ python inference_emb.py -e emb -m model_emb < test.txt
 
@@ -140,6 +140,9 @@ $ python inference_emb.py -e emb -m model_emb < test.txt
 ```
 - training speed is very slow despite of using GPU. 
   how make it faster? what about using word2vec(character-based)?
+  and more batch_size?
+- increasing batch_size
+  some tricky code works are needed
 - using a pretrained word embedding
   https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
 ```
