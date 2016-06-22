@@ -85,7 +85,8 @@ out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 
 ```
 # usage : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
 # modify save_vocab() to train non-ascii data
-$ cd tensorflow/tensorflow/models/embedding
+# modify eval() to avoid zero-devision
+$ cp tensorflow/tensorflow/models/embedding/word2vec_optimized.py .
 $ vi word2vec_optimized.py
   ...
   def save_vocab(self):
@@ -96,10 +97,17 @@ $ vi word2vec_optimized.py
         f.write("%s %d\n" % (tf.compat.as_text(opts.vocab_words[i]).encode('utf-8'),
                              opts.vocab_counts[i]))
   ...
+  def eval(self):
+  ...
+  print("Eval %4d/%d accuracy = %4.1f%%" % (correct, total,
+                                              0 if total is 0 else correct * 100.0 / total))
+  ...
 # preprocessing for character-based
+$ python tochar.py < big.txt > big.txt.char
 
 # train word2vec
-$ python word2vec_optimized.py --train_data=train.txt --eval_data=questions-words.txt --save_path=tmp
+$ mkdir tmp
+$ python word2vec_optimized.py --train_data=big.txt.char --eval_data=questions-words.txt --save_path=tmp
 
 # test word2vec
 $ cd segm-lstm
