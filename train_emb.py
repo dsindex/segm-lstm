@@ -4,7 +4,6 @@
 import sys
 import os
 import re
-import pickle
 from   optparse import OptionParser
 import numpy as np
 import tensorflow as tf
@@ -47,8 +46,9 @@ if __name__ == '__main__':
 	n_input = embedding_dim         # input dimension, embedding dimension size
 	n_hidden = 8                    # hidden layer size
 	n_classes = 2                   # output classes,  space or not
-	'''	
+	'''
 	util.test_next_batch_emb(train_path, char_dic, id2emb, n_steps, padd)
+	sys.exit(0)
 	'''
 	x = tf.placeholder(tf.float32, [None, n_steps, n_input])
 	y_ = tf.placeholder(tf.int32, [None, n_steps])
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
 	batch_size = 1
 	learning_rate = 0.01
-	training_iters = 30
+	training_iters = 1
 	logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
 	targets = y_
 	seq_weights = tf.ones([n_steps * batch_size])
@@ -110,10 +110,11 @@ if __name__ == '__main__':
 			while pos != -1 :
 				batch_xs, batch_ys, next_pos, count = util.next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd)
 				'''
-				print 'window : ' + sentences[begin][pos:pos+n_steps].encode('utf-8')
+				print 'window : ' + sentence[pos:pos+n_steps].encode('utf-8')
 				print 'count : ' + str(count)
 				print 'next_pos : ' + str(next_pos)
 				print batch_ys
+				print batch_xs
 				'''
 				feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 				sess.run(optimizer, feed_dict=feed)
@@ -129,6 +130,7 @@ if __name__ == '__main__':
 				feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
 				validation_cost += sess.run(cost, feed_dict=feed)
 				validation_accuracy += sess.run(accuracy, feed_dict=feed)
+			validation_cost /= len(validation_data)
 			validation_accuracy /= len(validation_data)
 			sys.stderr.write('seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
 		seq += 1

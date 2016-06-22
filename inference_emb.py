@@ -4,7 +4,6 @@
 import sys
 import os
 import re
-import pickle
 from   optparse import OptionParser
 import numpy as np
 import tensorflow as tf
@@ -18,21 +17,24 @@ VERBOSE = 0
 if __name__ == '__main__':
 	parser = OptionParser()
 	parser.add_option("--verbose", action="store_const", const=1, dest="verbose", help="verbose mode")
+	parser.add_option("-e", "--embedding", dest="embedding_dir", help="dir path to embeddings and vocab", metavar="embedding_dir")
 	parser.add_option("-m", "--model", dest="model_dir", help="dir path to load model", metavar="model_dir")
 	(options, args) = parser.parse_args()
 	if options.verbose == 1 : VERBOSE = 1
+	embedding_dir = options.embedding_dir
+	if embedding_dir == None :
+		parser.print_help()
+		exit(1)
 	model_dir = options.model_dir
 	if model_dir == None :
 		parser.print_help()
 		exit(1)
-	dic_path = model_dir + '/' + 'dic.pickle'
 		
 	# config
 	n_steps = 30                    # time steps
 	padd = '\t'                     # special padding chracter
-	with open(dic_path, 'rb') as handle :
-		char_dic = pickle.load(handle)    # load dic
-	n_input = len(char_dic)         # input dimension, vocab size
+	char_dic, id2ch, id2emb, embedding_dim = util.build_dictionary_emb(embedding_dir)
+	n_input = embedding_dim         # input dimension, embedding dimension size
 	n_hidden = 8                    # hidden layer size
 	n_classes = 2                   # output classes,  space or not
 	vocab_size = n_input
@@ -88,7 +90,7 @@ if __name__ == '__main__':
 		tag_vector = [-1]*(sentence_size+n_steps) # buffer n_steps
 		pos = 0
 		while pos != -1 :
-			batch_xs, batch_ys, next_pos, count = util.next_batch(sentence, pos, char_dic, vocab_size, n_steps, padd)
+			batch_xs, batch_ys, next_pos, count = util.next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd)
 			
 			print 'window : ' + sentence[pos:pos+n_steps]
 			print 'count : ' + str(count)

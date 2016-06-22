@@ -46,6 +46,7 @@ n_steps = 30
 - train and inference
 ```
 $ python train.py --train=train.txt --validation=validation.txt --model=model
+
 $ python inference.py --model=model < test.txt
 ...
 model restored from model/segm.ckpt
@@ -65,6 +66,7 @@ seq : 29,validation cost : 124.562777519,validation accuracy : 0.942500010133
 save dic
 save model(final)
 end of training
+
 $ python inference.py --model=model < test.txt
 ...
 model restored from model/segm.ckpt
@@ -75,8 +77,6 @@ out = 기업들이 극 한 구조조정을 통해흑자로 전환하거나
 out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 풀이 된 다.
 
 # it seems that training data is not enough...
-
-
 ```
 
 - character-based word2vec
@@ -101,11 +101,11 @@ $ vi word2vec_optimized.py
                                               0 if total is 0 else correct * 100.0 / total))
   ...
 # preprocessing for character-based
-$ python tochar.py < big.txt > big.txt.char
+$ python tochar.py < bigbig.txt > bigbig.txt.char
 
 # train word2vec
 $ mkdir emb
-$ python word2vec_optimized.py --train_data=big.txt.char --eval_data=questions-words.txt --embedding_size=200 --save_path=emb
+$ python word2vec_optimized.py --train_data=bigbig.txt.char --eval_data=questions-words.txt --embedding_size=200 --save_path=emb
 
 # test word2vec
 $ cd segm-lstm
@@ -130,7 +130,9 @@ $ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump
 
 - train and inference with character embedding
 ```
-$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb
+$ python train_emb.py --train=bigbig.txt --validation=validation.txt --embedding=emb --model=model_emb
+
+$ python inference_emb.py -e emb -m model_emb < test.txt
 
 ```
 

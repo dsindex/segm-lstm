@@ -106,10 +106,11 @@ if __name__ == '__main__':
 			while pos != -1 :
 				batch_xs, batch_ys, next_pos, count = util.next_batch(sentence, pos, char_dic, vocab_size, n_steps, padd)
 				'''
-				print 'window : ' + sentences[begin][pos:pos+n_steps]
+				print 'window : ' + sentence[pos:pos+n_steps].encode('utf-8')
 				print 'count : ' + str(count)
 				print 'next_pos : ' + str(next_pos)
 				print batch_ys
+				print batch_xs
 				'''
 				feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
 				sess.run(optimizer, feed_dict=feed)
@@ -125,6 +126,7 @@ if __name__ == '__main__':
 				feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
 				validation_cost += sess.run(cost, feed_dict=feed)
 				validation_accuracy += sess.run(accuracy, feed_dict=feed)
+			validation_cost /= len(validation_data)
 			validation_accuracy /= len(validation_data)
 			sys.stderr.write('seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
 		seq += 1

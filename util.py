@@ -170,13 +170,14 @@ def build_dictionary_emb(embedding_dir) :
 	with open(vocab_path, "r") as handle :
 		for line in handle :
 			ch, count = line.split(' ')
-			id2ch[idx] = ch
+			id2ch[idx] = ch.decode('utf-8')
 			idx += 1
 	ch2id = {}
 	id2emb = {}
 	for i, ch in id2ch.iteritems() :
 		ch2id[ch] = i
-		id2emb[i] = embedding[i]
+		if i in embedding : id2emb[i] = embedding[i]
+		else : id2emb[i] = embedding[0] # 'UNK' embedding 
 	return ch2id, id2ch, id2emb, len(embedding[0])
 
 def next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd) :
@@ -196,6 +197,9 @@ def next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd) :
 	for c in x_data :
 		id = 0 # for 'UNK'
 		if c in char_dic : id = char_dic[c]
+		'''
+		print 'c, id = ', c.encode('utf-8'), id
+		'''
 		tmp_x_data.append(id2emb[id])
 	x_data = tmp_x_data
 	batch_xs.append(x_data)
