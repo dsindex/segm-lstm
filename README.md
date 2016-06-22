@@ -112,6 +112,17 @@ $ python word2vec_optimized.py --train_data=big.txt.char --eval_data=questions-w
 # test word2vec
 $ cd segm-lstm
 $ python test_word2vec.py --model_path=tmp
+...
+가
+=====================================
+가                  1.0000
+감                  0.9716
+알                  0.9695
+니                  0.9681
+기                  0.9680
+런                  0.9659
+쥬                  0.9640
+...
 
 # you can dump embedding by using embedding_dump() in test_word2vec.py
 
