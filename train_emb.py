@@ -20,7 +20,7 @@ if __name__ == '__main__':
 	parser.add_option("--verbose", action="store_const", const=1, dest="verbose", help="verbose mode")
 	parser.add_option("-t", "--train", dest="train_path", help="train file path", metavar="train_path")
 	parser.add_option("-v", "--validation", dest="validation_path", help="validation file path", metavar="validation_path")
-	parser.add_option("-e", "--embedding_dir", dest="embedding_dir", help="dir path to embeddings and vocab", metavar="embedding_dir")
+	parser.add_option("-e", "--embedding", dest="embedding_dir", help="dir path to embeddings and vocab", metavar="embedding_dir")
 	parser.add_option("-m", "--model", dest="model_dir", help="dir path to save model", metavar="model_dir")
 	(options, args) = parser.parse_args()
 	if options.verbose == 1 : VERBOSE = 1
@@ -43,14 +43,12 @@ if __name__ == '__main__':
 	# config
 	n_steps = 30                    # time steps
 	padd = '\t'                     # special padding chracter
-	char_dic, id2emb = util.load_embedding(embedding_dir)
-	sys.exit(0)
-	n_input = len(char_dic)         # input dimension, vocab size
+	char_dic, id2ch, id2emb, embedding_dim = util.build_dictionary_emb(embedding_dir)
+	n_input = embedding_dim         # input dimension, embedding dimension size
 	n_hidden = 8                    # hidden layer size
 	n_classes = 2                   # output classes,  space or not
-	vocab_size = n_input
-	'''
-	util.test_next_batch(train_path, char_dic, vocab_size, n_steps, padd)
+	'''	
+	util.test_next_batch_emb(train_path, char_dic, id2emb, n_steps, padd)
 	'''
 	x = tf.placeholder(tf.float32, [None, n_steps, n_input])
 	y_ = tf.placeholder(tf.int32, [None, n_steps])
@@ -96,7 +94,7 @@ if __name__ == '__main__':
 	checkpoint_file = 'segm.ckpt'
 
 	if validation_path :
-		validation_data = util.get_validation_data(validation_path, char_dic, vocab_size, n_steps, padd)
+		validation_data = util.get_validation_data_emb(validation_path, char_dic, id2emb, n_steps, padd)
 
 	seq = 0
 	while seq < training_iters :
@@ -110,9 +108,9 @@ if __name__ == '__main__':
 			sentence = util.snorm(line)
 			pos = 0
 			while pos != -1 :
-				batch_xs, batch_ys, next_pos, count = util.next_batch(sentence, pos, char_dic, vocab_size, n_steps, padd)
+				batch_xs, batch_ys, next_pos, count = util.next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd)
 				'''
-				print 'window : ' + sentences[begin][pos:pos+n_steps]
+				print 'window : ' + sentences[begin][pos:pos+n_steps].encode('utf-8')
 				print 'count : ' + str(count)
 				print 'next_pos : ' + str(next_pos)
 				print batch_ys
@@ -135,10 +133,6 @@ if __name__ == '__main__':
 			sys.stderr.write('seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
 		seq += 1
 
-	sys.stderr.write('save dic\n')
-	dic_path = model_dir + '/' + 'dic.pickle'
-	with open(dic_path, 'wb') as handle :
-		pickle.dump(char_dic, handle)
 	sys.stderr.write('save model(final)\n')
 	saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
 	sys.stderr.write('end of training\n')

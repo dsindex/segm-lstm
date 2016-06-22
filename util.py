@@ -42,25 +42,6 @@ def build_dictionary(train_path, padd) :
 	close_file(fid)
 	return char_dic
 
-def load_embedding(embedding_dir) :
-	embedding_path = embedding_dir + '/' + 'embedding.pickle'
-	with open(embedding_path, 'rb') as handle :
-		embedding = pickle.load(handle)
-	vocab_chs = {}
-	vocab_path = embedding_dir + '/' + 'vocab.txt'
-	idx = 0
-	with open(vocab_path, "r") as handle :
-		for line in handle :
-			ch, count = line.split(' ')
-			vocab_chs[idx] = ch
-			idx += 1
-	id2ch = vocab_chs
-	id2emb = {}
-	for i, ch in id2ch.iteritems() :
-		id2emb[i] = embedding[i]
-		print i, embedding[i]
-	return id2ch, id2emb
-
 def one_hot(i, size) :
 	return [ 1 if j == i else 0 for j in xrange(size) ]
 
@@ -140,7 +121,7 @@ def test_next_batch(train_path, char_dic, vocab_size, n_steps, padd) :
 		pos = 0
 		while pos != -1 :
 			batch_xs, batch_ys, next_pos, count = next_batch(sentence, pos, char_dic, vocab_size, n_steps, padd)
-			print 'window : ' + sentence[pos:pos+n_steps]
+			print 'window : ' + sentence[pos:pos+n_steps].encode('utf-8')
 			print 'count : ' + str(count)
 			print 'next_pos : ' + str(next_pos)
 			print batch_ys
@@ -178,3 +159,81 @@ def to_sentence(tag_vector, sentence) :
 		j += 1
 	n_sentence = ''.join(out)
 	return snorm(n_sentence).encode('utf-8')
+
+def build_dictionary_emb(embedding_dir) :
+	embedding_path = embedding_dir + '/' + 'embedding.pickle'
+	with open(embedding_path, 'rb') as handle :
+		embedding = pickle.load(handle)
+	id2ch = {}
+	vocab_path = embedding_dir + '/' + 'vocab.txt'
+	idx = 0
+	with open(vocab_path, "r") as handle :
+		for line in handle :
+			ch, count = line.split(' ')
+			id2ch[idx] = ch
+			idx += 1
+	ch2id = {}
+	id2emb = {}
+	for i, ch in id2ch.iteritems() :
+		ch2id[ch] = i
+		id2emb[i] = embedding[i]
+	return ch2id, id2ch, id2emb, len(embedding[0])
+
+def next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd) :
+	'''
+	y_data =  1 or 0     => n_steps unfolding => [0,0,1,0,...]
+	^
+	|
+	x_data = [1,0,...,0] => n_steps unfolding => [[1.0,1.4,..3.2],..,[0.2,0.6,3.7,..,0.0]]
+
+	batch_xs.shape => (batch_size=1, n_steps, n_input)
+	batch_ys.shape => (batch_size=1, n_steps)
+	'''
+	batch_xs = []
+	batch_ys = []
+	x_data, y_data, next_pos, count = get_xy_data(sentence, pos, n_steps, padd)
+	tmp_x_data = []
+	for c in x_data :
+		id = 0 # for 'UNK'
+		if c in char_dic : id = char_dic[c]
+		tmp_x_data.append(id2emb[id])
+	x_data = tmp_x_data
+	batch_xs.append(x_data)
+	batch_ys.append(y_data)
+	batch_xs = np.array(batch_xs, dtype='f')
+	batch_ys = np.array(batch_ys, dtype='int32')
+	return batch_xs, batch_ys, next_pos, count
+
+def test_next_batch_emb(train_path, char_dic, id2emb, n_steps, padd) :
+	fid = open_file(train_path, 'r')
+	for line in fid :
+		line = line.strip()
+		if line == "" : continue
+		line = line.decode('utf-8')
+		sentence = snorm(line)
+		pos = 0
+		while pos != -1 :
+			batch_xs, batch_ys, next_pos, count = next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd)
+			print 'window : ' + sentence[pos:pos+n_steps].encode('utf-8')
+			print 'count : ' + str(count)
+			print 'next_pos : ' + str(next_pos)
+			print batch_xs
+			print batch_ys
+			pos = next_pos
+	close_file(fid)
+
+def get_validation_data_emb(validation_path, char_dic, id2emb, n_steps, padd) :
+	validation_data = []
+	fid = open_file(validation_path, 'r')
+	for line in fid :
+		line = line.strip()
+		if line == "" : continue
+		line = line.decode('utf-8')
+		sentence = snorm(line)
+		pos = 0
+		while pos != -1 :
+			batch_xs, batch_ys, next_pos, count = next_batch_emb(sentence, pos, char_dic, id2emb, n_steps, padd)
+			validation_data.append((batch_xs, batch_ys, count))
+			pos = next_pos
+	close_file(fid)
+	return validation_data

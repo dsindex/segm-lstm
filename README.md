@@ -104,12 +104,12 @@ $ vi word2vec_optimized.py
 $ python tochar.py < big.txt > big.txt.char
 
 # train word2vec
-$ mkdir tmp
-$ python word2vec_optimized.py --train_data=big.txt.char --eval_data=questions-words.txt --embedding_size=200 --save_path=tmp
+$ mkdir emb
+$ python word2vec_optimized.py --train_data=big.txt.char --eval_data=questions-words.txt --embedding_size=200 --save_path=emb
 
 # test word2vec
 $ cd segm-lstm
-$ python test_word2vec.py --embedding_size=200 --model_path=tmp
+$ python test_word2vec.py --embedding_size=200 --model_path=emb
 ...
 가
 =====================================
@@ -123,14 +123,14 @@ $ python test_word2vec.py --embedding_size=200 --model_path=tmp
 ...
 
 # you can dump embedding by using embedding_dump() in test_word2vec.py
-$ python test_word2vec.py --embedding_size=200 --model_path=tmp --embedding_dump=1
-# now you have embeddings data in model_path/embedding.pickle
+$ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump=1
+# now you have embeddings data in emb/embedding.pickle
 
 ```
 
 - train and inference with character embedding
 ```
-$ python train_emb.py --train=big.txt --validation=validation.txt --embedding_dir=tmp --model=model
+$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb
 
 ```
 
