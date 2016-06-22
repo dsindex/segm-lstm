@@ -105,11 +105,11 @@ $ python tochar.py < big.txt > big.txt.char
 
 # train word2vec
 $ mkdir tmp
-$ python word2vec_optimized.py --train_data=big.txt.char --eval_data=questions-words.txt --save_path=tmp
+$ python word2vec_optimized.py --train_data=big.txt.char --eval_data=questions-words.txt --embedding_size=200 --save_path=tmp
 
 # test word2vec
 $ cd segm-lstm
-$ python test_word2vec.py --model_path=tmp
+$ python test_word2vec.py --embedding_size=200 --model_path=tmp
 ...
 가
 =====================================
