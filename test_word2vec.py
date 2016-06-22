@@ -168,14 +168,14 @@ class Word2Vec(object):
   def embedding_lookup(self, words):
     """Get word embedding list given a list of words."""
     ids = np.array([self._word2id.get(x, 0) for x in words])
+    '''
     for x in words:
-      '''
       print('word = %s' % x)
       id = self._word2id.get(x, 0)
       print('id = %s' % id)
       word = self._id2word.get(id, 'UNK')
       print('word = %s' % word)
-      '''
+    '''
     embeddings = self._session.run(self._nearby_emb, {self._nearby_word:ids})
     for i in xrange(len(words)):
       print("\n%s\n=====================================" % (words[i]))
