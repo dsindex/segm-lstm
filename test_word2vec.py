@@ -18,6 +18,7 @@ flags = tf.app.flags
 
 flags.DEFINE_string("model_path", None, "Directory to saved model.")
 flags.DEFINE_integer("embedding_size", 200, "The embedding dimension size.")
+flags.DEFINE_integer("embedding_dump", 0, "Dump embeddings or not")
 
 FLAGS = flags.FLAGS
 
@@ -181,11 +182,17 @@ class Word2Vec(object):
       print("\n%s\n=====================================" % (words[i]))
       print(embeddings[i])
   
-  def embedding_dump(self):
+  def embedding_dump(self, path):
     """Dump word embeddings"""
     nemb = self._session.run(self._nemb)
+    import pickle
+    embedding_file = path + '/' + 'embedding.pickle'
+    with open(embedding_file, 'wb') as handle:
+      pickle.dump(nemb, handle)
+    '''
     for i, emb in enumerate(nemb):
       print(i, emb)
+    '''
 
 def main(_):
   """Test a word2vec model."""
@@ -199,18 +206,20 @@ def main(_):
       checkpoint_dir = opts.model_path
       ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
       if ckpt and ckpt.model_checkpoint_path :
-        print('checkpoint_dir = ', checkpoint_dir)
-        print('checkpoint_path = ', ckpt.model_checkpoint_path)
+        sys.stderr.write('checkpoint_dir = %s\n' % checkpoint_dir)
+        sys.stderr.write('checkpoint_path = %s\n' % ckpt.model_checkpoint_path)
         model.saver.restore(session, ckpt.model_checkpoint_path)
         sys.stderr.write("model restored from %s\n" %(ckpt.model_checkpoint_path))
       else :
         sys.stderr.write("no checkpoint found" + '\n')
         sys.exit(-1)
+      if FLAGS.embedding_dump :
+        model.embedding_dump(opts.model_path)
+        sys.exit(0)
       c = model.analogy(b'france', b'paris', b'russia')
       print("analogy = %s" % c)
       model.nearby([b'france', b'paris', b'russia'])
       model.embedding_lookup([b'france', b'paris', b'russia'])
-      #model.embedding_dump()
       while 1:
         try : line = sys.stdin.readline()
         except KeyboardInterrupt : break

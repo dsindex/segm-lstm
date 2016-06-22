@@ -123,6 +123,14 @@ $ python test_word2vec.py --embedding_size=200 --model_path=tmp
 ...
 
 # you can dump embedding by using embedding_dump() in test_word2vec.py
+$ python test_word2vec.py --embedding_size=200 --model_path=tmp --embedding_dump=1
+# now you have embeddings data in model_path/embedding.pickle
+
+```
+
+- train and inference with character embedding
+```
+$ python train_emb.py --train=big.txt --validation=validation.txt --embedding_dir=tmp --model=model
 
 ```
 

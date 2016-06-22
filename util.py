@@ -3,6 +3,7 @@
 
 import sys
 import re
+import pickle
 import numpy as np
 
 CLASS_1 = 1  # next is space
@@ -40,6 +41,25 @@ def build_dictionary(train_path, padd) :
 	char_dic = {w: i for i, w in enumerate(char_rdic)} # char to id
 	close_file(fid)
 	return char_dic
+
+def load_embedding(embedding_dir) :
+	embedding_path = embedding_dir + '/' + 'embedding.pickle'
+	with open(embedding_path, 'rb') as handle :
+		embedding = pickle.load(handle)
+	vocab_chs = {}
+	vocab_path = embedding_dir + '/' + 'vocab.txt'
+	idx = 0
+	with open(vocab_path, "r") as handle :
+		for line in handle :
+			ch, count = line.split(' ')
+			vocab_chs[idx] = ch
+			idx += 1
+	id2ch = vocab_chs
+	id2emb = {}
+	for i, ch in id2ch.iteritems() :
+		id2emb[i] = embedding[i]
+		print i, embedding[i]
+	return id2ch, id2emb
 
 def one_hot(i, size) :
 	return [ 1 if j == i else 0 for j in xrange(size) ]
