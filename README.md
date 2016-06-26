@@ -60,13 +60,11 @@ out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀�
 $ python train.py --train=big.txt --validation=validation.txt --model=model --iters=3
 
 $ python inference.py --model=model < test.txt
-...
-model restored from model/segm.ckpt
-out = 이것 을 띄어쓰기 하면어 떻게 될 까 요.
-out = 아버 지 가방에들 어가 신다 .
-out = SK이노베이 션, GS , S -Oil, 대림산 업, 현대중공 업등 대규모적자 를 내 던
-out = 기업들이 극 한 구조조정을 통해흑자로 전환하거나
-out = 적자 폭을 축소한 것 이 영업이익 개선을 이 끈 것 으로 풀이 된 다.
+out = 이것을 띄어쓰기하면 어떻게 될 까요.
+out = 아버지가 방에 들어 가 신다.
+out = SK이노베이션, GS, S-Oil,대림산업, 현대 중공업등대규모적자를 내던
+out = 기업들이 극한 구조조정 을 통해 흑자로 전환하거나
+out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀이 된 다.
 
 # it seems that training data is not enough...
 ```
@@ -125,13 +123,29 @@ $ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump
 $ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=3
 
 $ python inference_emb.py -e emb -m model_emb < test.txt
-...
-model restored from model_emb/segm.ckpt
 out = 이것을 띄어쓰기하면 어떻게 될 까요.
 out = 아버지가 방에 들어가 신다.
 out = SK이노베이션, GS, S-Oil, 대림산업, 현대중공업등대규모적자를 내던
 out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 out = 적자폭을 축소한 것 이 영업이익개선을 이 끈것으로 풀이된 다.
+
+# prepare bigbig.txt(53548 news articles)
+$ python train_emb.py --train=bigbig.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=3
+...
+53545 th sentence ... done
+53546 th sentence ... done
+53547 th sentence ... done
+seq : 2,validation cost : 7.31046978633,validation accuracy : 0.905555615822
+save model(final)
+end of training
+# it takes 3 days long. ;;
+
+$ python inference_emb.py -e emb -m model_emb < test.txt
+out = 이것을 띄어쓰기하면 어떻게 될 까요.
+out = 아버지가 방에 들어가 신다.
+out = SK 이 노베이션, GS, S-Oil, 대림산업, 현대중공업등대규모적자를 내던
+out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
+out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀이 된다.
 ```
 
 - development note
