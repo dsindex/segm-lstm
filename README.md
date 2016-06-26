@@ -158,10 +158,11 @@ out = 친구들은 커서 무엇이 되고 싶습니까
 - development note
 ```
 - training speed is very slow despite of using GPU. 
-  how make it faster? what about using word2vec(character-based)?
-  and more batch_size?
+  how make it faster?
   - increasing batch_size
     we need some tricky code works that process file to generate batch using `yield`
+  - increasing number of threads
+  - using distributed training
 - tuning points
   - trained model from news corpus is week for verbal words. so we need to prepare a verbal corpus from somewhere.
     - ex) '날이에요','싶나요','해요'
