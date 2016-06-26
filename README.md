@@ -138,6 +138,7 @@ $ python train_emb.py --train=bigbig.txt --validation=validation.txt --embedding
 seq : 2,validation cost : 7.31046978633,validation accuracy : 0.905555615822
 save model(final)
 end of training
+
 # it takes 3 days long. ;;
 
 $ python inference_emb.py -e emb -m model_emb < test.txt
@@ -146,6 +147,12 @@ out = 아버지가 방에 들어가 신다.
 out = SK 이 노베이션, GS, S-Oil, 대림산업, 현대중공업등대규모적자를 내던
 out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀이 된다.
+
+$ python inference_emb.py -e emb -m model_emb
+유치원음악회가열리는날입니다.
+out = 유치원음악회가 열리는 날 입니다.
+친구들은커서무엇이되고싶습니까
+out = 친구들은 커서 무엇이 되고 싶습니까
 ```
 
 - development note
@@ -159,4 +166,6 @@ out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀�
   https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
 - when train_emb.py is running, it is not possible to run train.py simultaneously.
   we need to figure out.
+- trained model from news corpus is week for verbal words. so we need to prepare a verbal corpus from somewhere.
+  - ex) '날이에요','싶나요','해요'
 ```
