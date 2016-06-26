@@ -160,12 +160,17 @@ out = 친구들은 커서 무엇이 되고 싶습니까
 - training speed is very slow despite of using GPU. 
   how make it faster? what about using word2vec(character-based)?
   and more batch_size?
-- increasing batch_size
-  we need some tricky code works that process file to generate batch using `yield`
-- using a pretrained word embedding
-  https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow
+  - increasing batch_size
+    we need some tricky code works that process file to generate batch using `yield`
+- tuning points
+  - trained model from news corpus is week for verbal words. so we need to prepare a verbal corpus from somewhere.
+    - ex) '날이에요','싶나요','해요'
+  - iterations
+  - hidden layer dimension
+  - embedding dimension
 - when train_emb.py is running, it is not possible to run train.py simultaneously.
   we need to figure out.
-- trained model from news corpus is week for verbal words. so we need to prepare a verbal corpus from somewhere.
-  - ex) '날이에요','싶나요','해요'
 ```
+
+- references
+  - [using a pretrained word embedding](https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow)
