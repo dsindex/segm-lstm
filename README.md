@@ -164,7 +164,7 @@ out = 친구들은 커서 무엇이 되고 싶습니까
   - increasing number of threads
   - using distributed training
 - tuning points
-  - trained model from news corpus is week for verbal words. so we need to prepare a verbal corpus from somewhere.
+  - trained model from news corpus seems to be weak for verbal words. so we need to prepare a verbal corpus from somewhere.
     - ex) '날이에요','싶나요','해요'
   - iterations
   - hidden layer dimension
