@@ -8,6 +8,8 @@ segm-lstm
     - output
       - string, ex) '이것을 띄어쓰기하면 어떻게 될까요' 
   - model
+    X | 이 | 것 | 을 |   | 띄 | 어 | 쓰 | 기 | 하 | 면 |   | 어 | 떻 | 게 |   | 될 | 까 | 요 
+    Y | 0  | 0  | 1  | 0 | 0  | 0  | 0  | 0  | 0  | 1  | 1 | 0  | 0  | 1  | 0 | 0  | 0  | 0 
     - x : '이것을 띄어쓰기하면 어떻게 될까요'
 	- y : '0 0 1 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0'
 	  - 1 : if next char is space
@@ -17,7 +19,7 @@ segm-lstm
     - 0.8
 
 - sketch code
-```
+```shell
 $ python sketch.py
 ...
 step : 970,cost : 0.0117462
@@ -28,7 +30,7 @@ out = 아버지가 방에 들어가신다.
 ```
 
 - how to handle variable-length input
-```
+```protosame
 let's try to use sliding window method and early stop.
 
 n_steps = 30
@@ -46,7 +48,7 @@ n_steps = 30
 ```
 
 - train and inference
-```
+```shell
 $ python train.py --train=train.txt --validation=validation.txt --model=model --iters=30
 
 $ python inference.py --model=model < test.txt
@@ -72,7 +74,7 @@ out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀�
 ```
 
 - character-based word2vec
-```
+```shell
 # usage : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
 # modify save_vocab() to train non-ascii data
 # modify eval() to avoid zero-devision
@@ -121,7 +123,7 @@ $ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump
 ```
 
 - train and inference with character embedding
-```
+```shell
 $ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=3
 
 $ python inference_emb.py -e emb -m model_emb < test.txt
@@ -158,7 +160,7 @@ out = 친구들은 커서 무엇이 되고 싶습니까
 ```
 
 - development note
-```
+```protosame
 - training speed is very slow despite of using GPU. 
   how make it faster?
   - increasing batch_size
