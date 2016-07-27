@@ -210,6 +210,8 @@ def main(_):
       model = Word2Vec(opts, session)
       checkpoint_dir = opts.model_path
       ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+      full_path = tf.train.latest_checkpoint(checkpoint_dir)
+      print("full_path = %s" % full_path)
       if ckpt and ckpt.model_checkpoint_path :
         sys.stderr.write('checkpoint_dir = %s\n' % checkpoint_dir)
         sys.stderr.write('checkpoint_path = %s\n' % ckpt.model_checkpoint_path)
