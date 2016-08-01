@@ -73,25 +73,7 @@ out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀�
 
 - character-based word2vec
 ```shell
-# usage : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
-# modify save_vocab() to train non-ascii data
-# modify eval() to avoid zero-devision
-$ cp tensorflow/tensorflow/models/embedding/word2vec_optimized.py .
-$ vi word2vec_optimized.py
-  ...
-  def save_vocab(self):
-    """Save the vocabulary to a file so the model can be reloaded."""
-    opts = self._options
-    with open(os.path.join(opts.save_path, "vocab.txt"), "w") as f:
-      for i in xrange(opts.vocab_size):
-        f.write("%s %d\n" % (tf.compat.as_text(opts.vocab_words[i]).encode('utf-8'),
-                             opts.vocab_counts[i]))
-  ...
-  def eval(self):
-  ...
-  print("Eval %4d/%d accuracy = %4.1f%%" % (correct, total,
-                                              0 if total is 0 else correct * 100.0 / total))
-  ...
+# word2vec : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
 # preprocessing for character-based
 $ python tochar.py < bigbig.txt > bigbig.txt.char
 
