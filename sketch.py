@@ -103,9 +103,8 @@ def RNN(_X, _istate, _weights, _biases):
 	_X = tf.matmul(_X, _weights['hidden']) + _biases['hidden'] # (?, n_hidden)
 
 	# Define a lstm cell with tensorflow
-	lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(n_hidden, forget_bias=1.0)
-	#lstm_cell = rnn_cell.LSTMCell(n_hidden, forget_bias=1.0)
-	#lstm_cell = rnn_cell.GRUCell(n_hidden, forget_bias=1.0)
+	#lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(n_hidden, forget_bias=1.0)
+	lstm_cell = tf.nn.rnn_cell.LSTMCell(n_hidden, forget_bias=1.0)
 	# Split data because rnn cell needs a list of inputs for the RNN inner loop
 	_X = tf.split(0, n_steps, _X) # n_steps splits each of which contains (?, n_hidden)
 	'''
