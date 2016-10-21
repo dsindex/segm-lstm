@@ -4,6 +4,9 @@
 import tensorflow as tf
 import numpy as np
 
+CLASS_1 = 1  # next is space
+CLASS_0 = 0  # next is not space
+
 def weight_variable(shape):
 	initial = tf.truncated_normal(shape, stddev=0.1)
 	return tf.Variable(initial)
@@ -44,9 +47,9 @@ def next_batch(sentences, begin, batch_size, n_steps, char_dic) :
 		batch_xs.append(x_data)
 		y_data = []
 		for c in sentence[1:n_steps] :
-			if c == ' ' : y_data.append(1) # next is space
-			else : y_data.append(0)        # next is not space
-		y_data.append(0)
+			if c == ' ' : y_data.append(CLASS_1) # next is space
+			else : y_data.append(CLASS_0)        # next is not space
+		y_data.append(CLASS_0)
 		batch_ys.append(y_data)
 		count += 1
 		if count == batch_size : break
@@ -189,7 +192,7 @@ while i < len(test_sentences) :
 	j = 0
 	while j < n_steps :
 		tag = rst[j]
-		if tag == 1 :
+		if tag == CLASS_1 :
 			out.append(sentence[j])
 			out.append(' ')
 		else :
