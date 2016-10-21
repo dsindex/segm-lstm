@@ -59,7 +59,7 @@ out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀이된다.
 
 
-$ python train.py --train=big.txt --validation=validation.txt --model=model --iters=3
+$ python train.py --train=big.txt --validation=validation.txt --model=model --iters=30
 
 $ python inference.py --model=model < test.txt
 out = 이것을 띄어쓰기하면 어떻게 될 까요.
@@ -104,7 +104,7 @@ $ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump
 
 - train and inference with character embedding
 ```shell
-$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=3
+$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=30
 
 $ python inference_emb.py -e emb -m model_emb < test.txt
 out = 이것을 띄어쓰기하면 어떻게 될 까요.
