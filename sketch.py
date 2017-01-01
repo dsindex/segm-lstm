@@ -84,7 +84,7 @@ x = tf.placeholder("float", [None, n_steps, n_input])
 y_ = tf.placeholder("int32", [None, n_steps])
 
 # LSTM layer
-# 2 x n_hidden length (state & cell)
+# 2 x n_hidden = state_size = (hidden state + cell state)
 istate = tf.placeholder("float", [None, 2*n_hidden])
 weights = {
 	'hidden' : weight_variable([n_input, n_hidden]),
@@ -103,7 +103,7 @@ def RNN(_X, _istate, _weights, _biases):
 	# (n_steps*batch_size, n_input) => (?, n_input)
 	_X = tf.reshape(_X, [-1, n_input])
 	# Linear activation
-	_X = tf.matmul(_X, _weights['hidden']) + _biases['hidden'] # (?, n_hidden)
+	_X = tf.matmul(_X, _weights['hidden']) + _biases['hidden'] # (?, n_hidden)+scalar(n_hidden,)=(?,n_hidden)
 
 	# Define a lstm cell with tensorflow
 	lstm_cell = tf.nn.rnn_cell.LSTMCell(n_hidden, forget_bias=1.0, state_is_tuple=False)
@@ -111,7 +111,7 @@ def RNN(_X, _istate, _weights, _biases):
 	_X = tf.split(0, n_steps, _X) # n_steps splits each of which contains (?, n_hidden)
 	'''
 	ex)
-	i  split0  split1  split2 .... split(n)
+	i  split0  split1  split2 .... split(n_steps-1)
 	0  (8)     ...                 (8)
 	1  (8)     ...                 (8)
 	...
