@@ -19,7 +19,7 @@ def RNN(_X, _istate, _weights, _biases, n_hidden, n_steps, n_input, early_stop):
 	# (n_steps*batch_size, n_input) => (?, n_input)
 	_X = tf.reshape(_X, [-1, n_input])
 	# Linear activation
-	_X = tf.matmul(_X, _weights['hidden']) + _biases['hidden'] # (?, n_hidden)
+	_X = tf.matmul(_X, _weights['hidden']) + _biases['hidden'] # (?, n_hidden)+scalar(n_hidden,)=(?,n_hidden)
 
 	# Define a lstm cell with tensorflow
 	lstm_cell = tf.nn.rnn_cell.LSTMCell(n_hidden, forget_bias=1.0, state_is_tuple=False)
