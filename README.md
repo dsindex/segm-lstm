@@ -14,7 +14,7 @@ segm-lstm
 	  - 0 : if next char is not space
     - learn to predict tag sequence
   - tensorflow version
-    - 0.9
+    - 0.11
 
 - sketch code
 ```shell
