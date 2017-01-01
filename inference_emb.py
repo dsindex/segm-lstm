@@ -44,7 +44,7 @@ if __name__ == '__main__':
 	early_stop = tf.placeholder(tf.int32)
 
 	# LSTM layer
-	# 2 x n_hidden length (state & cell)
+	# 2 x n_hidden = state_size = (hidden state & cell state)
 	istate = tf.placeholder(tf.float32, [None, 2*n_hidden])
 	weights = {
 		'hidden' : model.weight_variable([n_input, n_hidden]),
