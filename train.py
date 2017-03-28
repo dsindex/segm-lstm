@@ -71,10 +71,10 @@ if __name__ == '__main__':
 
 	batch_size = 1
 	learning_rate = 0.01
-	logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
+	logits = tf.reshape(tf.concat(y, 1), [-1, n_classes])
 	targets = y_
 	seq_weights = tf.ones([n_steps * batch_size])
-	loss = tf.nn.seq2seq.sequence_loss_by_example([logits], [targets], [seq_weights])
+	loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example([logits], [targets], [seq_weights])
 	cost = tf.reduce_sum(loss) / batch_size 
 	optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 			inter_op_parallelism_threads=NUM_THREADS,
 			log_device_placement=False)
 	sess = tf.Session(config=config)
-	init = tf.initialize_all_variables()
+	init = tf.global_variables_initializer()
 	sess.run(init)
 	saver = tf.train.Saver() # save all variables
 	checkpoint_dir = model_dir

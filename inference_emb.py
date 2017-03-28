@@ -58,14 +58,14 @@ if __name__ == '__main__':
 	y = model.RNN(x, istate, weights, biases, n_hidden, n_steps, n_input, early_stop)
 
 	batch_size = 1
-	logits = tf.reshape(tf.concat(1, y), [-1, n_classes])
+	logits = tf.reshape(tf.concat(y, 1), [-1, n_classes])
 
 	NUM_THREADS = 1
 	config = tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS,
 			inter_op_parallelism_threads=NUM_THREADS,
 			log_device_placement=False)
 	sess = tf.Session(config=config)
-	init = tf.initialize_all_variables()
+	init = tf.global_variables_initializer()
 	sess.run(init)
 	saver = tf.train.Saver() # save all variables
 	checkpoint_dir = model_dir
