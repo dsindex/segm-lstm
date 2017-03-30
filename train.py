@@ -92,8 +92,7 @@ if __name__ == '__main__':
     with open(dic_path, 'wb') as handle :
         pickle.dump(char_dic, handle)
 
-    if validation_path :
-        validation_data = util.get_validation_data(validation_path, char_dic, vocab_size, n_steps, padd)
+    validation_data = util.get_validation_data(validation_path, char_dic, vocab_size, n_steps, padd)
 
     seq = 0
     while seq < training_iters :
@@ -118,22 +117,21 @@ if __name__ == '__main__':
                 feed={x: batch_xs, y_: batch_ys, istate: c_istate, early_stop:count}
                 sess.run(optimizer, feed_dict=feed)
                 pos = next_pos
-            sys.stderr.write('%s th sentence ... done\n' % i)
+            sys.stderr.write('%s th sentence for %s th iterations ... done\n' % (i, seq))
             i += 1
         util.close_file(fid)
         # validation
-        if validation_path :
-            validation_cost = 0
-            validation_accuracy = 0
-            for validation_xs, validation_ys, count in validation_data :
-                feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
-                validation_cost += sess.run(cost, feed_dict=feed)
-                validation_accuracy += sess.run(accuracy, feed_dict=feed)
-            validation_cost /= len(validation_data)
-            validation_accuracy /= len(validation_data)
-            sys.stderr.write('seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
-            sys.stderr.write('save model\n')
-            saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
+        validation_cost = 0
+        validation_accuracy = 0
+        for validation_xs, validation_ys, count in validation_data :
+            feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
+            validation_cost += sess.run(cost, feed_dict=feed)
+            validation_accuracy += sess.run(accuracy, feed_dict=feed)
+        validation_cost /= len(validation_data)
+        validation_accuracy /= len(validation_data)
+        sys.stderr.write('iterations : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
+        sys.stderr.write('save model\n')
+        saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
         seq += 1
 
     sys.stderr.write('end of training\n')
