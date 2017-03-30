@@ -121,17 +121,18 @@ if __name__ == '__main__':
             i += 1
         util.close_file(fid)
         # validation
-        validation_cost = 0
-        validation_accuracy = 0
-        for validation_xs, validation_ys, count in validation_data :
-            feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
-            validation_cost += sess.run(cost, feed_dict=feed)
-            validation_accuracy += sess.run(accuracy, feed_dict=feed)
-        validation_cost /= len(validation_data)
-        validation_accuracy /= len(validation_data)
-        sys.stderr.write('iterations : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
-        sys.stderr.write('save model\n')
-        saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
+        if seq % 10 == 0 :
+            validation_cost = 0
+            validation_accuracy = 0
+            for validation_xs, validation_ys, count in validation_data :
+                feed={x: validation_xs, y_: validation_ys, istate: c_istate, early_stop:count}
+                validation_cost += sess.run(cost, feed_dict=feed)
+                validation_accuracy += sess.run(accuracy, feed_dict=feed)
+            validation_cost /= len(validation_data)
+            validation_accuracy /= len(validation_data)
+            sys.stderr.write('iterations : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
+            sys.stderr.write('save model\n')
+            saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
         seq += 1
 
     sys.stderr.write('end of training\n')
