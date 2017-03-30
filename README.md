@@ -46,7 +46,7 @@ n_steps = 30
 
 - train and inference
 ```shell
-$ python train.py --train=train.txt --validation=validation.txt --model=model --iters=30
+$ python train.py --train=train.txt --validation=validation.txt --model=model --iters=100
 
 $ python inference.py --model=model < test.txt
 ...
@@ -58,7 +58,7 @@ out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 out = 적자폭을 축소한 것이영 업이익 개선을 이끈 것으로 풀이된다.
 
 
-$ python train.py --train=big.txt --validation=validation.txt --model=model --iters=30
+$ python train.py --train=big.txt --validation=validation.txt --model=model --iters=100
 
 $ python inference.py --model=model < test.txt
 out = 이것을 띄어쓰기하면 어떻게 될 까요.
@@ -73,12 +73,16 @@ out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀�
 - character-based word2vec
 ```shell
 # word2vec : https://github.com/tensorflow/models/tree/master/tutorials/embedding
+
+$ git submodule update --init
+# generate 'word2vec_ops.so' as described in models/tutorials/embedding/README.md
+
 # preprocessing for character-based
 $ python tochar.py < bigbig.txt > bigbig.txt.char
 
 # train word2vec
 $ mkdir emb
-$ python word2vec_optimized.py --train_data=bigbig.txt.char --eval_data=questions-words.txt --embedding_size=200 --save_path=emb
+$ python models/tutorials/embedding/word2vec_optimized.py --train_data=bigbig.txt.char --eval_data=questions-words.txt --embedding_size=200 --save_path=emb
 
 # test word2vec
 $ cd segm-lstm
@@ -103,7 +107,7 @@ $ python test_word2vec.py --embedding_size=200 --model_path=emb --embedding_dump
 
 - train and inference with character embedding
 ```shell
-$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=30
+$ python train_emb.py --train=big.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=100
 
 $ python inference_emb.py -e emb -m model_emb < test.txt
 out = 이것을 띄어쓰기하면 어떻게 될 까요.
@@ -113,7 +117,7 @@ out = 기업들이 극한 구조조정을 통해 흑자로 전환하거나
 out = 적자폭을 축소한 것 이 영업이익개선을 이 끈것으로 풀이된 다.
 
 # prepare bigbig.txt(53548 news articles)
-$ python train_emb.py --train=bigbig.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=3
+$ python train_emb.py --train=bigbig.txt --validation=validation.txt --embedding=emb --model=model_emb --iters=100
 ...
 53545 th sentence ... done
 53546 th sentence ... done
