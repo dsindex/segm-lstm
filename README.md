@@ -72,7 +72,7 @@ out = 적자폭을 축소한 것이 영업이 익개선을 이 끈것으로 풀�
 
 - character-based word2vec
 ```shell
-# word2vec : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/embedding
+# word2vec : https://github.com/tensorflow/models/tree/master/tutorials/embedding
 # preprocessing for character-based
 $ python tochar.py < bigbig.txt > bigbig.txt.char
 
