@@ -128,9 +128,9 @@ if __name__ == '__main__':
             validation_cost /= len(validation_data)
             validation_accuracy /= len(validation_data)
             sys.stderr.write('seq : %s' % (seq) + ',' + 'validation cost : %s' % validation_cost + ',' + 'validation accuracy : %s\n' % (validation_accuracy))
+            sys.stderr.write('save model\n')
+            saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
         seq += 1
 
-    sys.stderr.write('save model(final)\n')
-    saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
     sys.stderr.write('end of training\n')
     sess.close()
