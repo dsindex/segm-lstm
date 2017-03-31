@@ -121,7 +121,7 @@ if __name__ == '__main__':
             i += 1
         util.close_file(fid)
         # validation
-        if seq % 10 == 0 :
+        if seq % 1 == 0 :
             validation_cost = 0
             validation_accuracy = 0
             for validation_xs, validation_ys, count in validation_data :
