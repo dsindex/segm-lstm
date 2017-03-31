@@ -131,5 +131,7 @@ if __name__ == '__main__':
             saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
         seq += 1
 
+    sys.stderr.write('save model(final)\n')
+    saver.save(sess, checkpoint_dir + '/' + checkpoint_file)
     sys.stderr.write('end of training\n')
     sess.close()
