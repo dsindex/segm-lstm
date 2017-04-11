@@ -12,7 +12,7 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 import numpy as np
 import tensorflow as tf
 
-from tensorflow.models.embedding import gen_word2vec as word2vec
+word2vec = tf.load_op_library(os.path.join('models/tutorials/embedding/', 'word2vec_ops.so'))
 
 flags = tf.app.flags
 
@@ -130,7 +130,7 @@ class Word2Vec(object):
     self._nearby_idx = nearby_idx
 
     # Properly initialize all variables.
-    tf.initialize_all_variables().run()
+    tf.global_variables_initializer().run()
 
     # Embedding lookup
     self._nemb = nemb
