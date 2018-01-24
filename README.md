@@ -162,3 +162,8 @@ out = 친구들은 커서 무엇이 되고 싶습니까
 
 - references
   - [using a pretrained word embedding](https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow)
+  - codes
+  ```
+  * sketch_dynamic.py
+  * count_one.py
+  ```
