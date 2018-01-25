@@ -53,10 +53,10 @@ print 'last(dimension of each hidden) : ', last.get_shape()
 weight = tf.Variable(tf.truncated_normal([num_hidden, int(target.get_shape()[1])]))
 bias = tf.Variable(tf.constant(0.1, shape=[target.get_shape()[1]]))
 output = tf.matmul(last, weight) + bias
-## (?, 24) x (24, 20) -> (?, 20)
+## (?, 24) x (24, 21) -> (?, 21)
 print 'output : ', output.get_shape()
 prediction = tf.nn.softmax(output)
-## (?, 20)
+## (?, 21)
 print 'prediction : ', prediction.get_shape()
 ## KL distance
 cross_entropy = -tf.reduce_sum(target * tf.log(tf.clip_by_value(prediction,1e-10,1.0)))
