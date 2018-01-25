@@ -15,16 +15,21 @@ segm-lstm
     - learn to predict tag sequence
   - tensorflow version : 1.0
 
-- sketch code
-```shell
-$ python sketch.py
-...
-step : 970,cost : 0.0117462
-step : 980,cost : 0.0115485
-step : 990,cost : 0.0113553
-out = 이것을 띄어쓰기하면 어떻게 될까요
-out = 아버지가 방에 들어가신다.
-```
+- reference codes
+  - sketch.py
+  ```shell
+  $ python sketch.py
+  ...
+  step : 970,cost : 0.0117462
+  step : 980,cost : 0.0115485
+  step : 990,cost : 0.0113553
+  out = 이것을 띄어쓰기하면 어떻게 될까요
+  out = 아버지가 방에 들어가신다.
+  ```
+  - count_one.py
+  ```
+  * count the number of 1s
+  ```
 
 - how to handle variable-length input
 ```protosame
@@ -162,8 +167,3 @@ out = 친구들은 커서 무엇이 되고 싶습니까
 
 - references
   - [using a pretrained word embedding](https://codedump.io/share/GsajBJMQJ50P/1/using-a-pre-trained-word-embedding-word2vec-or-glove-in-tensorflow)
-  - codes
-  ```
-  * sketch_dynamic.py
-  * count_one.py
-  ```

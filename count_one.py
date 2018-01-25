@@ -58,10 +58,11 @@ print 'output : ', output.get_shape()
 prediction = tf.nn.softmax(output)
 ## (?, 21)
 print 'prediction : ', prediction.get_shape()
-## KL distance
+## cost as cross entropy(KL distance)
 cross_entropy = -tf.reduce_sum(target * tf.log(tf.clip_by_value(prediction,1e-10,1.0)))
 optimizer = tf.train.AdamOptimizer()
 minimize = optimizer.minimize(cross_entropy)
+## averaging error
 mistakes = tf.not_equal(tf.argmax(target, 1), tf.argmax(prediction, 1))
 error = tf.reduce_mean(tf.cast(mistakes, tf.float32))
 
