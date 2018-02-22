@@ -26,6 +26,11 @@ segm-lstm
   out = 이것을 띄어쓰기하면 어떻게 될까요
   out = 아버지가 방에 들어가신다.
   ```
+  - sketch_dynamic.py
+  ```
+  * convert sketch.py using tf.nn.dynamic_rnn()
+  * more easy to use
+  ```
   - count_one.py
   ```
   * count the number of 1s

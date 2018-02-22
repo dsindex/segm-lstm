@@ -3,6 +3,7 @@
 
 import tensorflow as tf
 import numpy as np
+import sys
 
 CLASS_1 = 1  # next is space
 CLASS_0 = 0  # next is not space
@@ -58,9 +59,8 @@ def next_batch(sentences, begin, batch_size, sequence_length, char2idx) :
     return batch_xs, batch_ys
 
 def rnn_model(hidden_sizie, batch_size, X) :
-    cell = tf.contrib.rnn.BasicLSTMCell(num_units=hidden_size, state_is_tuple=True)
-    initial_state = cell.zero_state(batch_size, tf.float32)
-    outputs, _states = tf.nn.dynamic_rnn(cell=cell, inputs=X, initial_state=initial_state, dtype=tf.float32)
+    cell = tf.contrib.rnn.LSTMCell(num_units=hidden_size, state_is_tuple=True)
+    outputs, _= tf.nn.dynamic_rnn(cell=cell, inputs=X, dtype=tf.float32)
     return outputs
 
 sentences = [u'이것을 띄어쓰기하면 어떻게 될까요.',
@@ -86,17 +86,17 @@ input_dim = vocab_size          # input dimension, one-hot size, vocab size
 n_classes = 2                   # output classes,  space or not
 hidden_size = n_classes         # output form LSTM, directly predict one-hot
 
-X = tf.placeholder(tf.float32, [None, sequence_length, input_dim])  # X one-hot
-Y = tf.placeholder(tf.int32, [None, sequence_length])               # Y label
+X = tf.placeholder(tf.float32, [None, sequence_length, input_dim])  # X one-hot, (None, 19, 25)
+Y = tf.placeholder(tf.int32, [None, sequence_length])               # Y label,   (None, 19)
 
 # training
 batch_size = 1
-outputs = rnn_model(hidden_size, batch_size, X)
+outputs = rnn_model(hidden_size, batch_size, X)  # (None, 19, 2)
 weights = tf.ones([batch_size, sequence_length])
 sequence_loss = tf.contrib.seq2seq.sequence_loss(logits=outputs, targets=Y, weights=weights)
 loss = tf.reduce_mean(sequence_loss)
 train = tf.train.AdamOptimizer(learning_rate=0.1).minimize(loss)
-prediction = tf.argmax(outputs, axis=2)
+prediction = tf.argmax(outputs, axis=2)          # (None, 19)
 
 NUM_THREADS = 1
 sess = tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=NUM_THREADS,inter_op_parallelism_threads=NUM_THREADS,log_device_placement=False))
@@ -144,13 +144,15 @@ results = sess.run(prediction, feed_dict={X: batch_xs})
 i = 0
 while i < len(test_sentences) :
     sentence = test_sentences[i]
-    bidx = i*sequence_length
-    eidx = bidx + sequence_length
-    rst = result[bidx:eidx]
+    bidx = 0
+    eidx = sequence_length
+    rst = results[i][bidx:eidx]
+    print 'rst = ', rst
     # generate output using tag(space or not)
     out = []
     j = 0
     while j < sequence_length :
+        print 'rst[j] = ', rst[j]
         tag = rst[j]
         if tag == CLASS_1 :
             out.append(sentence[j])
